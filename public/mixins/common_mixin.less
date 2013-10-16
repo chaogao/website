@@ -1,0 +1,206 @@
+/**
+ * 颜色变量
+ * @author gaochao
+ */
+@x-white:       #ffffff;
+@x-white-smoke: #fbfbfb;
+
+@x-gray:        #dddddd;
+@x-gray-text:   #808080;
+@x-gray-dark:   #999999;
+@x-gray-smoke:  #e5e5e5;
+
+@x-blue:        #6f6fe1;
+@x-blue-light:  #9393cf;
+@x-blue-smoke:  #f1f0fa; 
+@x-blue-dark:   #0F2540; 
+@x-blue-link:   #3366cc; 
+
+@x-black:       #000;
+@x-black-dark:  #333;
+@x-black-light: #666;
+
+@x-orange:      #ff6000;
+@x-orange-light:#B9887D;
+@x-orange-smoke:#D7C4BB;
+@x-orange-dark: #ff851b;
+
+@x-red:         #d46e70;
+@x-red-light:   #ff1f11;
+@x-red-dark:    #64363C;
+@x-red-smoke:   #DC9FB4;
+
+@x-green-smoke: #b4dbcf;
+@x-green:       #60b30a;
+
+
+/**
+ * 公用函数
+ * @author gaochao
+ */
+
+/* clearfix less实现 */
+.x-clearfix() {
+    *zoom: 1;
+    *overflow: hidden;
+
+    &:after,
+    &:before {
+        display: table;
+        content: "";
+    }
+
+    &:after {
+        clear: both;
+    }
+}
+
+/* 雅黑字体 */
+.x-yahei() {
+    font-family: "Microsoft Yahei UI", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+}
+
+/* inline-block */
+.x-inline-block() {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+/**
+ * 按钮的样式
+ * @param {string} @width  按钮宽度
+ * @param {string} @height 按钮高度
+ */
+.x-btn(@width: 90px, @height: 30px) {
+    display: inline-block;
+    width: @width;
+    height: @height;
+    padding: 0;
+    border: none 0;
+    text-align: center;
+    zoom: 1;
+    *display: inline;
+}
+
+/**
+ * 图标样式
+ * @param {string} width icon宽度
+ * @param {string} height icon高度
+ * @param {string} margin-right 右外边距
+ */
+.x-icon (@width: 16px, @height:16px, @margin-right: 2px){
+    display: inline-block;
+    margin-right: @margin-right;
+    width: @width;
+    height: @height;
+    line-height: @height;
+    vertical-align: text-bottom;
+    *display: inline;
+    zoom: 1;
+}
+
+/**
+ * input
+ * @param {string} width
+ * @param {string} height
+ */
+.x-input (@width: 100px, @height:16px) {
+    width: @width;
+    height: @height;
+    padding: 3px 10px;
+    border: 1px solid @x-gray;
+    font-size: 12px;
+    line-height: @height;
+
+    &.invalid,
+    &:focus.invalid {
+        border: 1px solid @x-red;
+    }   
+}
+
+/**
+ * css3动画
+ * @param {string} @property 需要动画的属性，默认all
+ * @param {string} @duration 持续时间，默认1s
+ */
+.x-transition(@property: all, @duration: 1s) {
+    transition-property: @property;
+    transition-duration: @duration;
+}
+
+/**
+ * 透明度
+ * @param {int} @opacity 透明度
+ */
+.x-opacity(@opacity: .5) {
+    opacity: @opacity;
+    @filler: (@opacity * 100);
+    filter: alpha(opacity=@filler); 
+}
+
+/**
+ * min-height
+ * @param {string} @height 
+ */
+.x-min-height(@height) {
+    min-height: @height;
+    *height: @height;
+}
+
+/**
+ * 去除列表的样式
+ */
+.x-unstyle() {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/**
+ * 页面模块下边距,默认为20px
+ * .basic-info {
+ *   .layout-bottom; 默认值
+ *   .layout-bottom(30px); 传入参数
+ * }
+ */
+.layout-bottom (@bottom: 20px) {
+    margin-bottom: @bottom;
+}
+/**
+ * 页面模块顶部border
+ * .basic-info {
+ *   .layout-border-top; 默认值
+ *   .layout-border-top(2px, #ccc); 传入参数
+ * }
+ */
+.layout-border-top (@width: 1px, @color: #6f6fe1) {
+    border-top: @width solid @color;
+}
+
+/**
+ * 华丽丽的分割线
+ * ===================================================
+ * 以下部分为扩展业务minxin样式
+ * @todo 以后可以考虑合并到hotel项目中
+ */
+
+/**
+ * 磁片的基本单位
+ * @param {string} [length=25px]      磁片的边长
+ * @param {string} [bgColor=@x-white] 磁片的背景色
+ * @param {string} [color=@x-black]   磁片的文字颜色
+ */
+.x-ceil(@length: 25px, @bgColor: @x-white, @color: @x-black) {
+    .x-inline-block;
+    .x-transition(background-color, .5s);
+    width: @length;
+    height: @length;
+    background-color: @bgColor;
+    color: @color;
+    text-align: center;
+
+    &:hover {
+        background-color: darken(@bgColor, 10);
+    }
+}

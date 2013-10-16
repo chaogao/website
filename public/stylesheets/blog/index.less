@@ -1,0 +1,66 @@
+@import "/public/mixins/common_mixin.less";
+
+/** 分类部分的样式 */
+.blog-category {
+    .tab-blog-category {
+        .x-unstyle;
+        float: left;
+        width: 60px;
+
+        .tab-item {
+            .x-inline-block;
+            font-size: 14px;
+
+            a {
+                .x-ceil(60px, @x-blue-light, @x-white);
+                line-height: 60px;
+                text-decoration: none;
+            }
+
+            &.tab-item-active a,
+            &.tab-item-active a:hover {
+                color: @x-black;
+                background: @x-green-smoke;
+            }
+        }
+    }
+
+    .blog-category-content {
+        height: 100px;
+        margin-left: 60px;
+        padding: 10px;
+        background: @x-green-smoke;
+    }
+
+    .blog-category-list {
+        .x-unstyle;
+
+        li {
+            .x-ceil(100px);
+            .x-yahei;
+            position: relative;
+            line-height: 100px;
+            font-size: 40px;
+            cursor: pointer;
+
+            .description {
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
+                font-size: 12px;
+                font-weight: normal;
+                line-height: 16px;
+            }
+
+            &:hover {
+                color: @x-blue-link;
+            }
+        }
+    }    
+}
+
+.tip-blog-category {
+    .x-transition;
+    min-width: 600px;
+    border: 1px solid @x-blue-dark;
+}

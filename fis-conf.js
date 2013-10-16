@@ -20,7 +20,8 @@ fis.config.merge({
             },
             {
                 reg : /^\/public\/(.*\..*)$/i,
-                release : '/public/$1'
+                release : '/public/$1',
+                useCache: false
             },
             {
                 reg : /^\/(node_modules|routes|app.js)/i,
@@ -34,8 +35,5 @@ fis.config.merge({
                 useSprite: false
             }
         ]
-    },
-    pack: {
-        'public/package/all.css': [/^\/public\/.*\.(less|css)/]
     }
 });

@@ -4,5 +4,5 @@
  */
 
 exports.index = function(req, res){
-  res.render('index.tpl', { title: 'Express' });
+  res.render('blog/index.tpl', { title: 'Express' });
 };
