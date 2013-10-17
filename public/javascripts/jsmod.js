@@ -1443,7 +1443,7 @@ define("jsmod/ui/pagination", function(require, exports, module) {
          * @public
          */
         destroy: function () {
-            this.destroy();
+            this.destory();
         },
         /**
          * @private

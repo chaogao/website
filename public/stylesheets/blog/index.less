@@ -2,6 +2,8 @@
 
 /** 分类部分的样式 */
 .blog-category {
+    margin-bottom: 10px;
+
     .tab-blog-category {
         .x-unstyle;
         float: left;
@@ -35,7 +37,7 @@
     .blog-category-list {
         .x-unstyle;
 
-        li {
+        .blog-category-item {
             .x-ceil(100px);
             .x-yahei;
             position: relative;
@@ -55,12 +57,139 @@
             &:hover {
                 color: @x-blue-link;
             }
+
+            &.active {
+                background-color: @x-blue-smoke;
+                z-index: 2;
+            }
         }
     }    
 }
 
 .tip-blog-category {
-    .x-transition;
-    min-width: 600px;
-    border: 1px solid @x-blue-dark;
+    .x-transition(left, .3s);
+    width: 500px;
+    padding: 20px;
+    background-color: @x-blue-smoke;
+    box-shadow: 3px 3px 3px @x-gray;
+
+    .blog-articles {
+        .x-unstyle;
+        background-color: @x-white;
+
+        p {
+            margin: 0;
+        }
+
+        li {
+            .x-transition(border-color, .3s);
+            padding: 5px 5px 10px 5px;
+            border: 1px solid @x-white;
+            overflow: hidden;
+            cursor: pointer;
+
+            a {
+                .x-yahei;
+                margin-bottom: 5px;
+                font-size: 14px;
+                text-decoration: none;
+            }
+
+            &:hover {
+                border: 1px solid @x-green;
+            }
+        }
+
+        .description {
+            position: relative;
+            color: @x-black-light;
+        }
+
+        .background {
+            position: absolute;
+            left: 0;
+            top: -25px;
+            width: 100%;
+            height: 200%;
+            opacity: .3;
+            z-index: 1;
+        }
+
+        .date {
+            margin: 5px 0;
+        }
+    }
+
+    .blog-articles-page {
+        overflow: hidden;
+        .page {
+            float: right;
+            width: 260px;
+            overflow: hidden;
+
+            .page-item {
+                .x-transition(background-color, .5s);
+                float: left;
+                margin-right: 5px;
+                border: 1px solid @x-blue-smoke;
+                padding: 5px 10px;
+                text-decoration: none;
+
+                &.page-item-active,
+                &.page-item-active:hover {
+                    color: @x-black;
+                    border: 1px solid @x-white;
+                    background-color: @x-white;
+                }
+
+                &:hover {
+                    background-color: @x-blue;
+                    color: @x-white;
+                };
+            }
+        }
+    }
+}
+
+
+/**
+ * article 主体内容
+ */
+.blog-article {
+    min-height: 400px;
+    padding: 10px;
+    background: @x-green-smoke;
+
+    .blog-article-category {
+        float: left;
+        min-height: 400px;
+        width: 200px;
+    }
+
+    .blog-article-content {
+        position: relative;
+        min-height: 400px;
+        margin-left: 210px;
+        background-color: @x-white;
+    }
+
+    .blog-article-cover {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+
+        .read {
+            .x-ceil(100px, @x-green-dark);
+            .x-yahei;
+            position: absolute;
+            border: 2px solid @x-blue;
+            line-height: 100px;
+            color: @x-white;
+            font-size: 22px;
+            font-weight: bold;
+            opacity: .8;
+            text-decoration: none;
+        }
+    }
 }

@@ -6,8 +6,36 @@
     <div class="blog-category-content">
         <ul class="blog-category-list">
             <li class="blog-category-item">
-                JS
-                <span class="description">javascript(12)</span>
+                全
+                <span class="description">所有的文章(42)</span>
+            </li>
+            <li class="blog-category-item">
+                样
+                <span class="description">css(23)</span>
+            </li>
+            <li class="blog-category-item">
+                脚
+                <span class="description">javascript(23)</span>
+            </li>
+            <li class="blog-category-item">
+                图
+                <span class="description">graph(23)</span>
+            </li>
+            <li class="blog-category-item">
+                CSS
+                <span class="description">css(23)</span>
+            </li>
+            <li class="blog-category-item">
+                CSS
+                <span class="description">css(23)</span>
+            </li>
+            <li class="blog-category-item">
+                CSS
+                <span class="description">css(23)</span>
+            </li>
+            <li class="blog-category-item">
+                CSS
+                <span class="description">css(23)</span>
             </li>
             <li class="blog-category-item">
                 CSS
