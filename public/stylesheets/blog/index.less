@@ -157,18 +157,14 @@
  */
 .blog-article {
     min-height: 400px;
-    padding: 10px;
-    background: @x-green-smoke;
 
     .blog-article-category {
         float: left;
-        min-height: 400px;
         width: 200px;
     }
 
     .blog-article-content {
         position: relative;
-        min-height: 400px;
         margin-left: 210px;
         background-color: @x-white;
     }
@@ -180,16 +176,45 @@
         background-size: cover;
 
         .read {
-            .x-ceil(100px, @x-green-dark);
+            .x-ceil(150px, @x-green-dark);
             .x-yahei;
             position: absolute;
             border: 2px solid @x-blue;
-            line-height: 100px;
+            line-height: 150px;
             color: @x-white;
-            font-size: 22px;
+            font-size: 36px;
             font-weight: bold;
             opacity: .8;
             text-decoration: none;
+        }
+
+        .infomation {
+            position: absolute;
+            left: 60px;
+            top: 100px;
+            padding: 10px 20px;
+            background: url("/public/images/layouts/textur.png?__sprite") repeat;
+            background-color: @x-gray-smoke;
+            opacity: .7;
+
+            h2 {
+                .x-yahei();
+                font-size: 32px;
+
+                a {
+                    .x-transition(color, .3s);
+                    color: @x-blue-link;
+                    text-decoration: none;
+
+                    &:hover {
+                        color: @x-blue;
+                    }
+                }
+            }
+
+            .description {
+                color: @x-gray-text;
+            }
         }
     }
 }
