@@ -732,7 +732,7 @@ define("jsmod/ui/fixElement/dropDown", function (require, exports, module) {
  * @module jsmod/ui/fixElement/dropDown/suggestion
  */
 define("jsmod/ui/fixElement/dropDown/suggestion", function (require, exports, module) {
-    var Suggestion, DropDown, _option;
+    var DropDown, _option;
 
     DropDown = require("jsmod/ui/fixElement/dropDown");
 
@@ -775,7 +775,7 @@ define("jsmod/ui/fixElement/dropDown/suggestion", function (require, exports, mo
      * @param {bool}             [option.syncInput=true]     当target为input时，按上下键选中时是否同步填充
      * @param {bool}             [option.blurHide=true]      触发blur事件时是否隐藏
      */
-    Suggestion = function (option) {
+    var Suggestion = function (option) {
         var self = this,
             option;
 
@@ -1674,4 +1674,159 @@ define("jsmod/ui/tab", function(require, exports, module) {
     });
 
     module.exports = Tab;
+});
+;/**
+ * treeView 控件
+ * @module jsmod/ui/treeView
+ */
+define("jsmod/ui/treeView", function (require, exports, module) {
+    var _option = {
+        isToggleElement: true
+    }
+
+    /**
+     * treeView所使用的节点数据结构
+     * @typedef {object} TreeNode
+     * @property {string}       text             节点显示的内容
+     * @property {TreeNode[]}   [children]       子节点数组，如果没有则代表叶子节点
+     * @property {bool}         [expanded=false] 是否展开此节点，当本节点有子节点时设置此值才有用
+     */
+
+
+    /**
+     * 创建treeview控件，需要准备数据以及容器
+     * @constructor
+     * @alias module:jsmod/ui/treeView
+     * @param {(TreedNode|TreeNode[])}  datas                         树形结构的数据结构，可以是单树也可以是深林
+     * @param {object}                  option                        配置选项
+     * @param {(string|dom)}            option.content                树的容器
+     * @param {function}                option.getText                通过TreeNode数据结构获取需要渲染的内容
+     * @param {bool}                    [option.isToggleElement=true] 是否有控制toggle的元素
+     */
+    var TreeView = function (datas, option) {
+        var self = this;
+
+        self.option = $.extend({}, _option, option);
+        self.datas = $.isArray(datas) ? datas : [datas];
+        self.content = $(self.option.content);
+        self.render();
+        self.delegateEvents();
+    }
+
+    $.extend(TreeView.prototype,
+        /** @lends module:jsmod/ui/treeView.prototype */
+        {
+            /**
+             * 渲染树形结构的主逻辑
+             * @private
+             */
+            render: function () {
+                var self = this,
+                    createTree, root;
+
+                /**
+                 * 创建树形结构的递归函数
+                 * @private
+                 * @param {dom}        root     当前节点的root节点
+                 */
+                createTree = function (root, treeNode) {
+                    var li, father;
+
+                    li = $('<li class="treeview-node"></li>').html(self.option.getText ? self.option.getText(treeNode) : treeNode.text);
+                    root.append(li);
+
+                    if (!treeNode.children) {
+                        li.addClass("treevie-leaf");
+                        return;
+                    }
+
+                    father = $('<ul style="display:none;" class="treeview-list-fahter"></ul>').appendTo(li);
+                    li.addClass("treeview-node-father");
+
+                    if (self.option.isToggleElement) {
+                        li.prepend('<span class="treeview-toggle">');
+                    }
+
+
+                    if (treeNode.expanded) {
+                        self.expand(li);
+                    }
+
+                    $.each(treeNode.children, function () {
+                        createTree(father, this);
+                    });
+                };
+
+                root = $('<ul class="treeview-list-root"></ul>').appendTo(self.content);
+
+                $.each(self.datas, function () {
+                    createTree(root, this);
+                });
+            },
+            /**
+             * 开启一个 treeview-node-father，开启后会给 treeview-node-father 加上 treeview-node-father-expanded 样式类 ，并开启所有的父元素
+             * @public
+             * @param {dom}  fatherNode           要开启的节点
+             * @param {bool} [useAnimation=false] 是否启用动画
+             */
+            expand: function (fatherNode, useAnimation) {
+                var self = this,
+                    time = useAnimation ? "fast" : 0;
+
+                if (fatherNode.hasClass("treeview-node-father")) {
+                    fatherNode.children(".treeview-list-fahter").slideDown(time);
+                    fatherNode.addClass("treeview-node-father-expanded");
+                    fatherNode.children(".treeview-toggle").addClass("treeview-toggle-expanded");
+
+                    $(self).trigger("expanded", [{node: fatherNode}]);
+                }
+            },
+            /**
+             * @public
+             * @param {dom} fatherNode 要关闭的节点
+             * @param {bool} [useAnimation=false] 是否启用动画
+             * 关闭一个 treeview-node-father , 会删除 treeview-node-father-expanded 的样式类
+             */
+            contract: function (fatherNode, useAnimation) {
+                var self = this,
+                    time = useAnimation ? "fast" : 0;
+
+                if (fatherNode.hasClass("treeview-node-father-expanded")) {
+                    fatherNode.children(".treeview-list-fahter").slideUp(time);
+                    fatherNode.removeClass("treeview-node-father-expanded");
+                    fatherNode.children(".treeview-toggle-expanded").removeClass("treeview-toggle-expanded");
+
+                    $(self).trigger("contracted", [{node: fatherNode}]);
+                }
+            },
+            /**
+             * 绑定事件
+             * @private
+             */
+            delegateEvents: function () {
+                var self = this;
+
+                self.content.delegate(".treeview-node", "click", function (e) {
+                    var target = $(this);
+
+                    if (self.option.isToggleElement && !$(e.target).hasClass("treeview-toggle")) {
+                        e.stopPropagation();
+                        return;
+                    }
+
+                    if (target.hasClass("treeview-node-father")) {
+                        if (target.hasClass("treeview-node-father-expanded")) {
+                            self.contract(target, true);
+                        } else {
+                            self.expand(target, true);
+                        }   
+                    }
+
+                    e.stopPropagation();
+                });
+            }
+        }
+    );
+
+    module.exports = TreeView;
 });

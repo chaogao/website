@@ -63,7 +63,7 @@
                 z-index: 2;
             }
         }
-    }    
+    }
 }
 
 .tip-blog-category {
@@ -160,13 +160,82 @@
 
     .blog-article-category {
         float: left;
-        width: 200px;
+        width: 240px;
+
+
+        &.affix {
+            position: fixed;
+            top: 0;
+            z-index: 1;
+        } 
     }
 
     .blog-article-content {
         position: relative;
-        margin-left: 210px;
+        margin-left: 260px;
         background-color: @x-white;
+    }
+
+    .blog-article-category {
+        padding-top: 20px;
+        font-size: 12px;
+
+        ul {
+            .x-unstyle;
+
+            li {
+                margin-left: 10px;
+            }
+
+            a {
+                .x-transition(color, .3s);
+                text-decoration: none;
+                line-height: 22px;
+            }
+        }
+
+        .treevie-leaf {
+            .x-transition(background-color, .3s);
+
+            &:hover {
+                background-color: @x-blue-smoke;
+            }
+        }
+
+        .treeview-node-father {
+            > a {
+                .x-yahei;
+                margin-bottom: 5px;
+                font-size: 14px;
+                font-weight: bold;
+                line-height: 32px;
+            }
+
+            margin-bottom: 10px;
+        }
+
+        .treeview-node-father-expanded {
+            > a {
+                color: darken(@x-green, 10);
+
+                &:hover {
+                    color: darken(@x-green, 15);
+                }
+            }
+        }
+
+        .treeview-toggle {
+            .x-ceil(32px, @x-green-smoke);
+            margin-right: 5px;
+            background-image: url("/public/images/blog/icons/plus2-32.png?__sprite");
+            vertical-align: bottom;
+            cursor: pointer;
+
+            &.treeview-toggle-expanded {
+                background-color: @x-blue-smoke;
+                background-image: url("/public/images/blog/icons/minus2-32.png?__sprite");
+            }
+        }
     }
 
     .blog-article-cover {
@@ -193,7 +262,7 @@
             left: 60px;
             top: 100px;
             padding: 10px 20px;
-            background: url("/public/images/layouts/textur.png?__sprite") repeat;
+            background: url("/public/images/layouts/texture.png?__sprite") repeat;
             background-color: @x-gray-smoke;
             opacity: .7;
 
@@ -215,6 +284,50 @@
             .description {
                 color: @x-gray-text;
             }
+        }
+    }
+
+    .blog-article-content {
+        ol {
+            list-style: none;
+        }
+
+        ul {
+          list-style-type: disc;
+        }
+
+        ol {
+          list-style-type: none;
+        }
+
+        ul ul,
+        ol ul {
+          list-style-type: circle;
+        }
+
+        ul,
+        ol {
+          padding: 0;
+          margin: 0 0 10px 25px;
+        }
+
+        h1, h2, h3, h4, h5, h6, h7 {
+            .x-yahei;
+        }
+
+        p {
+            font-size: 12px;
+            line-height: 16px;
+        }
+
+        h1, h2, h3 {
+            padding-bottom: 5px;
+            border-bottom: 2px solid @x-green-dark;
+            box-shadow: 1px 1px 1px @x-gray;
+        }
+
+        blockquote {
+            border-left: 2px solid @x-green-dark;
         }
     }
 }

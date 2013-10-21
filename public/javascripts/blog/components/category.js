@@ -81,43 +81,44 @@
                     target = this,
                     dfd;
 
-                if (self.timer) {
-                    clearTimeout(self.timer);
-                }
+                self.timer && clearTimeout(self.timer);
+                self.timerIn && clearTimeout(self.timerIn);
 
-                if ($(target).hasClass("active")) {
+
+                self.timerIn = setTimeout( function() {
+                    if ($(target).hasClass("active")) {
                     return;
-                }
+                    }
 
-                $(target).parents("ul").find(".blog-category-item").removeClass("active");
+                    $(target).parents("ul").find(".blog-category-item").removeClass("active");
 
-                $(target).addClass("active");
+                    $(target).addClass("active");
 
-                dfd = $.Deferred(function(dfd) {
-                    setTimeout(function() {
-                        dfd.resolve(CATAGRORY_TEST_DATAS);
-                    }, 100);
-                }).done(function (json) {
-                    listContainer.show();
-                    listContainer.pager && listContainer.pager.destroy();
+                    dfd = $.Deferred(function(dfd) {
+                        setTimeout(function() {
+                            dfd.resolve(CATAGRORY_TEST_DATAS);
+                        }, 100);
+                    }).done(function (json) {
+                        listContainer.show();
+                        listContainer.pager && listContainer.pager.destroy();
 
-                    listContainer.fixTo($(target), "bottom", {left: 150, top: 0});
-                    listContainer.getElement().html(new EJS({text: Category.Const.T_BLOG_ARTICLES}).render(json));
-                    listContainer.pager = new Pagination(listContainer.getElement().find(".blog-articles-page"), Category.Const.C_PAGINATION);
-                });
+                        listContainer.fixTo($(target), "bottom", {left: 150, top: 0});
+                        listContainer.getElement().html(new EJS({text: Category.Const.T_BLOG_ARTICLES}).render(json));
+                        listContainer.pager = new Pagination(listContainer.getElement().find(".blog-articles-page"), Category.Const.C_PAGINATION);
+                    });
+                }, 200);
             });
 
             self.content.on("mouseleave", function () {
                 var target = this;
 
-                if (self.timer) {
-                    clearTimeout(self.timer);
-                }
+                self.timer && clearTimeout(self.timer);
+                self.timerIn && clearTimeout(self.timerIn);
 
                 self.timer = setTimeout(function () {
                     $(target).find(".blog-category-item").removeClass("active");
                     self.getListContainer().hide();
-                }, 300);
+                }, 200);
             });
 
             self.content.delegate(".tip-blog-category", "mouseenter", function () {

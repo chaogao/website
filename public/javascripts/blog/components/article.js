@@ -2,7 +2,9 @@
  * 一片文案的处理逻辑
  */
 (function() {
-    var Article;
+    var Article, TreeView;
+
+    TreeView = require("jsmod/ui/treeView");
 
     Article = function () {
         var self = this;
@@ -37,8 +39,8 @@
 
             $(".blog-article-cover").height(rHeight);
 
-            $(".blog-article-cover .read").css("left", parseInt(Math.random(0.2, 0.8) * (rWidth - 150)) + "px");
-            $(".blog-article-cover .read").css("top", parseInt(Math.random(0.2, 0.8) * (rHeight - 150)) + "px");
+            $(".blog-article-cover .read").css("left", parseInt(Math.random() * (rWidth - 150)) + "px");
+            $(".blog-article-cover .read").css("top", parseInt(Math.abs(rHeight - 150 - 240)  * Math.random() + 240) + "px");
         },
         /**
          * 获取article详情
@@ -81,7 +83,107 @@
                 });
             }).done(function () {
                 self.content.find(".blog-article-content").html(data.content);
+                self.analyseCategory();
             });
+        },
+        /**
+         * 分析目录
+         */
+        analyseCategory: function () {
+            var self = this,
+                article = self.content.find(".blog-article-content"),
+                count = 8, i = 1, datas = [], treeDatas = [], titles, id = 0;
+
+            for (i; i <= 8; i++) {
+                titles = article.find("h" + i);
+
+                $(titles).each(function () {
+                    $(this).attr("data-title-id", id++);
+                });
+
+                if (titles.length > 0) {
+                    datas.push(titles);
+                }
+            }
+
+            function getTreeNode (root, level) {
+                var reg, key;
+
+                if (!datas[level] || !/^\[(.*)\]/.test(root.text)) {
+                    return;
+                }
+
+                key = /^\[(.*)\]/.exec(root.text)[1];
+
+                reg = new RegExp("\\[" + key + ".*\\]");
+
+                root.children = [];
+
+                $.each(datas[level], function () {
+                    var node = {
+                        text: $(this).text(),
+                        id: $(this).data("title-id")
+                    };
+
+                    if (reg.test(node.text)) {
+                        root.children.push(node);
+                        getTreeNode(node, ++level);
+                    }
+                });
+            }
+
+            $.each(datas[0], function () {
+                var root = {};
+
+                root.text = $(this).text();
+                root.id = $(this).data("title-id");
+
+                getTreeNode(root, 1);
+
+                treeDatas.push(root);
+            });
+
+            self.treeView = new TreeView(treeDatas, {
+                content: ".blog-article-category",
+                getText: function (treeNode) {
+                    var text = self.getStrLength(treeNode.text) > 50 ? self.SubString(treeNode.text, 47) + '...' : treeNode.text;
+
+                    return '<a href="javascript:vodi(0)" data-cate-id="' + treeNode.id + '" title="' + treeNode.text + '" >' + text + '</a>';
+                }
+            });
+
+            self.treeView.content.delegate(".treeview-node", "click", function (e) {
+                var target = $(this).find("a"),
+                    id = target.data("cate-id");
+
+                $("html, body").animate({
+                    scrollTop: self.content.find("[data-title-id=" + id + "]").offset().top
+                });
+
+                e.stopPropagation();
+            });
+        },
+        /**
+         * 获取文字长度
+         */
+        getStrLength: function (str) {
+            var cArr = str.match(/[^\x00-\xff]/ig);
+            return str.length + (cArr == null ? 0 : cArr.length);
+        },
+        /**
+         * 无乱码字符串截取，如： var a="www.cnblogs.com";SubString(a,3)//返回www
+         * @param {String} str 字符串
+         */
+        SubString: function (str, n) {
+            var r = /[^\x00-\xff]/g;
+            if (str.replace(r, "mm").length <= n) return str;
+            var m = Math.floor(n / 2);
+            for (var i = m; i < str.length; i++) {
+                if (str.substr(0, i).replace(r, "mm").length >= n) {
+                    return str.substr(0, i);
+                }
+            }
+            return str;
         }
     });
 

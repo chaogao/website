@@ -1,5 +1,5 @@
 <div class="blog-article">
-    <div class="blog-article-category"></div>
+    <div class="blog-article-category" data-spy="affix" data-offset-top="200"></div>
     <div class="blog-article-content"></div>
     <div class="blog-article-cover"  style="background-image: url(/public/upload/KingPengiunsSeal_ZH-CN10941640086_1366x768.jpg)">
         <div class="infomation">
