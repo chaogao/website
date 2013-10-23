@@ -3,14 +3,15 @@
 body {
     margin: 8px;
     font-size: 12px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-    a,
-    a:link,
-    a:visited {
+    a {
         color: @x-blue-link;
+        text-decoration: none;
 
         &:hover {
             color: @x-blue;
+            text-decoration: underline;
         }
     }
 }
@@ -27,6 +28,7 @@ body {
 .nav-header {
     .x-unstyle;
     margin-bottom: 5px;
+    border-bottom: 1px solid @x-gray-smoke;
     font-size: 0;
 
     .nav-item {
@@ -36,6 +38,38 @@ body {
             line-height: 50px;
             font-size: 12px;
             text-decoration: none;
+        }
+    }
+}
+
+.blog-footer {
+    position: fixed;
+    padding: 5px 10px;
+    bottom: 8px;
+    right: 8px;
+    text-align: center;
+    color: @x-white;
+    background-color: @x-black;
+    opacity: .5;
+
+    a {
+        color: @x-white;
+
+        &:hover {
+            color: @x-white;
+        }
+    }
+
+    &.blog-footer-article {
+        position: static;
+        padding: 15px 10px;
+        opacity: 1;
+
+        a {
+            .x-ceil(80px, @x-red, @x-white);
+            line-height: 80px;
+            font-size: 18px;
+            font-weight: bold;
         }
     }
 }

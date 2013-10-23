@@ -22,7 +22,7 @@
             &.tab-item-active a,
             &.tab-item-active a:hover {
                 color: @x-black;
-                background: @x-green-smoke;
+                background: @x-white;
             }
         }
     }
@@ -31,14 +31,14 @@
         height: 100px;
         margin-left: 60px;
         padding: 10px;
-        background: @x-green-smoke;
+        background: @x-white;
     }
 
     .blog-category-list {
         .x-unstyle;
 
         .blog-category-item {
-            .x-ceil(100px);
+            .x-ceil(100px, @x-blue, @x-white-smoke);
             .x-yahei;
             position: relative;
             line-height: 100px;
@@ -54,12 +54,7 @@
                 line-height: 16px;
             }
 
-            &:hover {
-                color: @x-blue-link;
-            }
-
             &.active {
-                background-color: @x-blue-smoke;
                 z-index: 2;
             }
         }
@@ -71,7 +66,7 @@
     width: 500px;
     padding: 20px;
     background-color: @x-blue-smoke;
-    box-shadow: 3px 3px 3px @x-gray;
+    box-shadow: 2px 2px 2px @x-gray;
 
     .blog-articles {
         .x-unstyle;
@@ -160,38 +155,35 @@
 
     .blog-article-category {
         float: left;
-        width: 240px;
-
-
-        &.affix {
-            position: fixed;
-            top: 0;
-            z-index: 1;
-        } 
-    }
-
-    .blog-article-content {
         position: relative;
-        margin-left: 260px;
-        background-color: @x-white;
-    }
-
-    .blog-article-category {
-        padding-top: 20px;
+        width: 240px;
+        padding: 10px 10px 20px 0;
         font-size: 12px;
 
         ul {
             .x-unstyle;
-
-            li {
-                margin-left: 10px;
-            }
+            margin-top: 5px;
 
             a {
                 .x-transition(color, .3s);
                 text-decoration: none;
                 line-height: 22px;
             }
+        }
+
+        li ul {
+            margin-left: 20px;
+        }
+
+        .treeview-list-root:after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 30px;
+            width: 2px;
+            height: 300px;
+            border-right: 1px solid @x-green;
+            box-shadow: 2px 2px 2px @x-gray;
         }
 
         .treevie-leaf {
@@ -236,6 +228,12 @@
                 background-image: url("/public/images/blog/icons/minus2-32.png?__sprite");
             }
         }
+
+        &.affix {
+            position: fixed;
+            top: 0;
+            z-index: 1;
+        }
     }
 
     .blog-article-cover {
@@ -245,7 +243,7 @@
         background-size: cover;
 
         .read {
-            .x-ceil(150px, @x-green-dark);
+            .x-ceil(150px, fade(@x-green-dark, 80%));
             .x-yahei;
             position: absolute;
             border: 2px solid @x-blue;
@@ -253,7 +251,6 @@
             color: @x-white;
             font-size: 36px;
             font-weight: bold;
-            opacity: .8;
             text-decoration: none;
         }
 
@@ -263,8 +260,7 @@
             top: 100px;
             padding: 10px 20px;
             background: url("/public/images/layouts/texture.png?__sprite") repeat;
-            background-color: @x-gray-smoke;
-            opacity: .7;
+            background-color: fade(@x-gray-smoke, 80%);
 
             h2 {
                 .x-yahei();
@@ -288,6 +284,11 @@
     }
 
     .blog-article-content {
+        position: relative;
+        margin-left: 270px;
+        font-size: 14px;
+        background-color: @x-white;
+
         ol {
             list-style: none;
         }
@@ -328,6 +329,35 @@
 
         blockquote {
             border-left: 2px solid @x-green-dark;
+        }
+
+        .blog-article-title {
+            border-bottom: none;
+            padding: 5px 10px;
+            font-weight: normal;
+            font-size: 3em;
+            color: @x-red-dark;
+        }
+
+        .blog-article-date {
+            color: @x-gray-text;
+        }
+    }
+
+    .blog-article-suggest {
+        display: none;
+        margin-left: 270px;
+        margin-bottom: 10px;
+        padding: 5px 10px;
+        background-color: @x-gray-smoke;
+
+        dl {
+            margin-bottom: 10px;
+
+            dd {
+                margin-top: 5px;
+                color: @x-gray-text;
+            }
         }
     }
 }

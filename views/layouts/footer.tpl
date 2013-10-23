@@ -1,3 +1,8 @@
+    <div class="blog-footer">
+        <a href="javascript:void(0)">BLOG</a>
+        <a href="javascript:void(0)">JSMOD</a>
+        <p>© 2013 cg</p>
+    </div>
     <script src="http://dn-ali-js-cdn.qbox.me/jquery/2.0.0/jquery.min.js"></script>
     <script src="http://dn-ali-js-cdn.qbox.me/highlight.js/7.3/highlight.min.js"></script>
     

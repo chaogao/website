@@ -25,6 +25,21 @@
         self.getArticle();
     };
 
+    Article.Const = {};
+    Article.Const.T_SUGGESTION = '<h3>相关推荐</h3>' +
+        '[% if (pre) { %]' +
+            '<dl class="pre" data-id="[%= pre.id %]">' +
+                '<dt><a href="javascript:void(0);">上一篇：[%=pre.title%]</a></dt>' +
+                '<dd>[%=pre.description%]</dd>' +
+            '</dl>' +
+        '[% } %]' +
+        '[% if (next) { %]' +
+            '<dl class="next" data-id="[%= next.id %]">' +
+                '<dt><a href="javascript:void(0);">上一篇：[%=next.title%]</a></dt>' +
+                '<dd>[%=next.description%]</dd>' +
+            '</dl>' +
+        '[% } %]';
+
     $.extend(Article.prototype, {
         /**
          * 修正图片的宽高
@@ -49,7 +64,8 @@
             var self = this;
 
             $.get("/public/test/article.json", function (json) {
-                self.articleData = json;
+                self.articleData = json.article;
+                self.suggestionsData = json.suggestions;
                 $(self).trigger("recivedata", [{data: json}]);
             });
         },
@@ -84,7 +100,30 @@
             }).done(function () {
                 self.content.find(".blog-article-content").html(data.content);
                 self.analyseCategory();
+                self.initSuggestions();
+                self.titleAndFooter();
+                $(".blog-footer").addClass("blog-footer-article");
             });
+        },
+        /**
+         * 初始化建议模块
+         */
+        initSuggestions: function () {
+            var self = this,
+                html;
+
+            html = new EJS({text: Article.Const.T_SUGGESTION}).render(self.suggestionsData);
+
+            self.content.find(".blog-article-suggest").html(html).show();
+        },
+        /**
+         * 生成title和footer
+         */
+        titleAndFooter: function () {
+            var self = this,
+                data = self.articleData;
+
+            self.content.find(".blog-article-content").prepend('<h1 style="background: url(' + data.titleBg + ') no-repeat top right" class="blog-article-title">' + data.title + '</h2>' + '<p class="blog-article-date">' + data.author + ' post at: ' + data.date + '</p>');
         },
         /**
          * 分析目录
@@ -146,7 +185,7 @@
             self.treeView = new TreeView(treeDatas, {
                 content: ".blog-article-category",
                 getText: function (treeNode) {
-                    var text = self.getStrLength(treeNode.text) > 50 ? self.SubString(treeNode.text, 47) + '...' : treeNode.text;
+                    var text = self.getStrLength(treeNode.text) > 30 ? self.SubString(treeNode.text, 28) + '...' : treeNode.text;
 
                     return '<a href="javascript:vodi(0)" data-cate-id="' + treeNode.id + '" title="' + treeNode.text + '" >' + text + '</a>';
                 }
@@ -155,6 +194,11 @@
             self.treeView.content.delegate(".treeview-node", "click", function (e) {
                 var target = $(this).find("a"),
                     id = target.data("cate-id");
+
+                if ($(e.target).hasClass("treeview-toggle")) {
+                    e.stopPropagation();
+                    return;
+                }
 
                 $("html, body").animate({
                     scrollTop: self.content.find("[data-title-id=" + id + "]").offset().top
