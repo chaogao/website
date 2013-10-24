@@ -9,6 +9,8 @@ var express = require('express'),
     admin = require('./routes/admin'),
     http = require('http'),
     path = require('path'),
+    MongoStore = require('connect-mongo')(express),
+    conf = require("./db/conf"),
     app;
 
 require("./db");
@@ -20,6 +22,14 @@ app.engine('tpl', require('ejs').renderFile);
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
+app.use(express.cookieParser());
+app.use(express.session({
+    secret: conf.cookieSecret,
+    cookie: {maxAge: 1000 * 60 * 60 * 24 * 30},
+    store: new MongoStore({
+        db: conf.db
+    })
+}));
 app.use(flash());
 app.use(express.favicon());
 app.use(express.logger('dev'));

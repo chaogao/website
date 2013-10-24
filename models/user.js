@@ -5,7 +5,7 @@
 var mongoose = require("mongoose"),
     crypto = require("crypto"),
     deferred = require("deferred"),
-    Dig = "doudougou", schema, User;
+    Dig = "hex", schema, User;
 
 schema = mongoose.Schema({
     name: String,
@@ -21,10 +21,12 @@ schema.statics.validate = function (name, password) {
             md5Password = crypto.createHash("md5").update(password).digest(Dig),
             user;
 
-        user = self.find({name: name}, function (erro, user) {
-            var result = (user.password == md5Password && !erro) ? true : false;
+        console.log(md5Password);
 
-            dfd.resolve(result);
+        user = self.findOne({name: name}, function (erro, user) {
+            var result = (!erro && user && user.password == md5Password) ? true : false;
+
+            dfd.resolve({valid: result, user: user});
         });
 
         return dfd.promise();
@@ -36,4 +38,4 @@ schema.methods.saveUser = function (cb) {
     this.save(cb);
 }
 
-module.exports = User = mongoose.Model("User", schema);
+module.exports = User = mongoose.model("User", schema);

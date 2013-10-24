@@ -6,4 +6,7 @@
         <title><%= title %></title>
     </head>
     <body>
+        <% if (user) { %>
+            <a style="float:right" href="/admin/logout"><%=user.name%>, 登出</a>
+        <% } %>
         <% include ./components/nav.tpl %>

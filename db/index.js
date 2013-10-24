@@ -5,5 +5,5 @@ var conf = require("./conf"),
     mongoose = require("mongoose");
 
 module.exports = (function() {
-    return mongoose.connect(conf.host);
+    return mongoose.connect("mongodb://" + conf.host + "/" + conf.db);
 })();

@@ -1,3 +1,5 @@
 module.exports = {
-    "host": "mongodb://localhost/website"
+    "host": "localhost",
+    "db": "website",
+    "cookieSecret": "website"
 }

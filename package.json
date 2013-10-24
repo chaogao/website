@@ -11,6 +11,7 @@
     "less-middleware": "*",
     "mongoose": "*",
     "deferred": "*",
-    "connect-flash": "*"
+    "connect-flash": "*",
+    "connect-mongo": "*"
   }
 }
