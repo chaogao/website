@@ -1,0 +1,1 @@
+__inline('components/blog.js');

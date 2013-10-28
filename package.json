@@ -12,6 +12,7 @@
     "mongoose": "*",
     "deferred": "*",
     "connect-flash": "*",
-    "connect-mongo": "*"
+    "connect-mongo": "*",
+    "date-utils": "*"
   }
 }

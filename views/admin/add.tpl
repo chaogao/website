@@ -1,4 +1,4 @@
-<% include ../layouts/head.tpl %>
+<% include ../layouts/head.admin.tpl %>
     <h1>管理员添加</h1>
 
     <form method="post" action="/admin/add">

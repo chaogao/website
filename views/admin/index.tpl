@@ -1,5 +1,4 @@
-<% include ../layouts/head.tpl %>
-    <h1>当前</h1>
-
-    <%= user.name %>
+<% include ../layouts/head.admin.tpl %>
+    <h1>hello, <%= user.name %></h1>
+    <a href="/admin/blog">Blog</a>    
 <% include ../layouts/footer.tpl %>

@@ -35,6 +35,10 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+app.use(function (req, res, next) {
+    res.locals.user = req.session.user;
+    next();
+});
 app.use(app.router);
 
 // development only

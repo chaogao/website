@@ -1,4 +1,4 @@
-<% include ../layouts/head.tpl %>
+<% include ../layouts/head.admin.tpl %>
     <h1>登入</h1>
 
     <% if (error) { %>
