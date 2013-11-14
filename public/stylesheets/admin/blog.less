@@ -5,9 +5,26 @@
  */
 .admin-blog-list {
     p {
+        position: relative;
         padding-bottom: 5px;
+        padding-left: 70px;
         border-bottom: 1px solid @x-blue-smoke;
         line-height: 18px;
+
+        .title {
+            .x-inline-block;
+            width: 300px;
+        }
+    }
+
+    .top {
+        position: absolute;
+        left: 0;
+    }
+
+    .draft {
+        position: absolute;
+        left: 30px;
     }
 
     .actions {

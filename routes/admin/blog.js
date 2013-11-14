@@ -32,6 +32,10 @@ NEED_CHECK_ROUTES = [
     {
         "method": "post",
         "url": "/admin/blogdelete"
+    },
+    {
+        "method": "post",
+        "url": "/admin/blogtop"
     }
 ];
 
@@ -44,7 +48,9 @@ exports.init = function (app) {
     app.get("/admin/blog", function (req, res) {
         var blogs;
 
-        Blog.find(null, Blog.Const.MIN_FILEDS).exec(function (error, blogs) {
+        Blog.adminBlogs(Blog.Const.MIN_FILEDS, function(error, blogs) {
+            debugger;
+
             blogs.forEach(function (blog) {
                 debugger;
                 blog.dateStr = blog.date.toFormat("YYYY-MM-DD HH24:MI:SS");
@@ -75,7 +81,6 @@ exports.init = function (app) {
         req.body.blog.author = req.session.user.name;
 
         blog = new Blog(req.body.blog);
-        debugger;
         blog.saveBlog(function (error, blog) {
             var msg;
 
@@ -145,5 +150,22 @@ exports.init = function (app) {
                 res.json({code: -1, msg: "server error"});
             }
         });
+    });
+
+    /**
+     * 设置置顶 action:post
+     */
+    app.post("/admin/blogtop", function (req, res) {
+        var id = req.body.id;
+
+        if (id) {
+            Blog.setTop(id, function (error) {
+                if (!error) {
+                    res.json({code: 0});
+                } else {
+                    res.json({code: -1, msg: "server error"});
+                }
+            });
+        }
     });
 }

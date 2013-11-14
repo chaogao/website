@@ -15,7 +15,7 @@ schema = mongoose.Schema({
     bg: String,
     titleBg: String,
     top: {type: Boolean, default: false},
-    online: {}
+    draft: {type: Boolean, default: true}
 });
 
 /**
@@ -31,18 +31,46 @@ schema.methods.saveBlog = function (cb) {
 }
 
 /**
- * 置顶blog
+ * 获取排序后的blog列表，用于admin使用
  */
-schema.static.setTop = function (id) {
-    
+schema.statics.adminBlogs = function (fileds, cb) {
+    var self = this;
 
+    self.find({top: false}).select(fileds).sort({date: -1}).exec(function (error, blogs) {
+        if (!error) {
+            self.findOne({top: true}, fileds, function (error, blog) {
+                if (!error) {
+                    blog && blogs.unshift(blog);
+                }
+                cb && cb(error, blogs);
+            });
+        }
+    });
+}
+
+/**
+ * 置顶blog
+ * @param {string}   id   需要置顶的id
+ * @param {function} [cb] 回调函数
+ */
+schema.statics.setTop = function (id, cb) {
+    var self = this;
+
+    self.update({top: true}, {top: false}).exec(function (error) {
+        if (!error) {
+            self.update({_id: id}, {$set: {top: true}}).exec(function () {
+                debugger;
+                cb && cb.apply(this, arguments);
+            });
+        }
+    });
 }
 
 Blog = mongoose.model("Blog", schema);
 
 Blog.Const = {};
-Blog.Const.MIN_FILEDS = "title date";
-Blog.Const.MIDDLE_FILEDS = "title author description date tags bg titleBg";
-Blog.Const.FULL_FILEDS = "title author description date tags bg titleBg content";
+Blog.Const.MIN_FILEDS = "title date top draft";
+Blog.Const.MIDDLE_FILEDS = "title author description date tags bg titleBg top draft";
+Blog.Const.FULL_FILEDS = "title author description date tags bg titleBg content top draft";
 
 module.exports = Blog;
