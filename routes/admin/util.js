@@ -15,7 +15,7 @@ module.exports = {
         next();
     },
     /**
-     * 设置session，同时设置locals为渲染做准备
+     * 设置session，同时设置locals中的user，作为render中的默认参数
      * @public
      */
     setSesstion: function (req, app, user) {

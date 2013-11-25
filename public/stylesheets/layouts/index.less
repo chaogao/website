@@ -27,7 +27,7 @@ body {
 
 .nav-header {
     .x-unstyle;
-    margin-bottom: 5px;
+    padding-bottom: 10px;
     border-bottom: 1px solid @x-gray-smoke;
     font-size: 0;
 
@@ -71,5 +71,16 @@ body {
             font-size: 18px;
             font-weight: bold;
         }
+    }
+}
+
+/**
+ * 图标集合
+ */
+.icon {
+    .x-ceil(32px, @x-green-smoke);
+
+    &.icon-close {
+        background: url("/public/images/blog/icons/close_window-32.png?__sprite") no-repeat;
     }
 }

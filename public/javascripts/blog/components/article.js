@@ -6,7 +6,7 @@
 
     TreeView = require("jsmod/ui/treeView");
 
-    Article = function () {
+    Article = function (id) {
         var self = this;
 
         self.content = $(".blog-article");
@@ -22,7 +22,7 @@
         });
 
         self.deleagesEvents();
-        self.getArticle();
+        self.getArticle(id);
     };
 
     Article.Const = {};
@@ -60,13 +60,18 @@
         /**
          * 获取article详情
          */
-        getArticle: function () {
+        getArticle: function (id) {
             var self = this;
 
-            $.get("/public/test/article.json", function (json) {
-                self.articleData = json.article;
-                self.suggestionsData = json.suggestions;
-                $(self).trigger("recivedata", [{data: json}]);
+            $.ajax({
+                url: "/blog/" + id,
+                dataType: "json",
+                data: {json: true},
+                success: function (json) {
+                    self.articleData = json;
+                    // self.suggestionsData = json.suggestions;
+                    $(self).trigger("recivedata", [{data: json}]);
+                }
             });
         },
         /**
@@ -111,6 +116,10 @@
         initSuggestions: function () {
             var self = this,
                 html;
+                
+            if (!self.suggestionsData) {
+                return false;
+            }
 
             html = new EJS({text: Article.Const.T_SUGGESTION}).render(self.suggestionsData);
 
@@ -169,6 +178,10 @@
                         getTreeNode(node, ++level);
                     }
                 });
+            }
+
+            if (datas.length == 0) {
+                return false;
             }
 
             $.each(datas[0], function () {
@@ -231,6 +244,6 @@
         }
     });
 
-    new Article();
+    new Article($("#action-read").data("id"));
     $(window).trigger("resize");
 })();

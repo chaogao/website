@@ -23,12 +23,6 @@
                 titleBg: "/public/upload/canvas-logo-small.png",
                 description: "Canvas（片假名：フォーチュン アテリアル）是日本动画公司minori（オーガスト）制作的美少女动画，及其改编的小说、漫画等。简称Canvas。继前作《水夏～SUIKA～》之后minori的第五作。小说的标题是《Canvas -a fairy tale of the two another tale-》，电视动画版的标题是《Canvas -a tale of memories-》，PlayStation 3移植版游戏和PSP版标题则为《Canvas -a fairy tale of the two-》。以吸血鬼题材的校园恋爱故事。",
                 date: "2013-06-15"   
-            },
-            {
-                title: "canvas 设计渲染器",
-                titleBg: "/public/upload/canvas-logo-small.png",
-                description: "Canvas（片假名：フォーチュン アテリアル）是日本动画公司minori（オーガスト）制作的美少女动画，及其改编的小说、漫画等。简称Canvas。继前作《水夏～SUIKA～》之后minori的第五作。小说的标题是《Canvas -a fairy tale of the two another tale-》，电视动画版的标题是《Canvas -a tale of memories-》，PlayStation 3移植版游戏和PSP版标题则为《Canvas -a fairy tale of the two-》。以吸血鬼题材的校园恋爱故事。",
-                date: "2013-06-15"   
             }
         ]
     };
@@ -46,7 +40,8 @@
     };
 
     Category.Const = {};
-    Category.Const.T_BLOG_ARTICLES = '<ul class="blog-articles">' +
+    Category.Const.T_BLOG_ARTICLES = '<a href="javascript:void(0)" class="glyphicon glyphicon-remove-circle action-close"></a>' +
+        '<ul class="blog-articles">' +
         '[% $.each(articles, function () { %]' +
             '<li class="clearfix">' +
                 '<div class="content">' +
@@ -109,16 +104,22 @@
                 }, 200);
             });
 
-            self.content.on("mouseleave", function () {
-                var target = this;
-
+            self.content.delegate(".action-close", "click", function() {
                 self.timer && clearTimeout(self.timer);
                 self.timerIn && clearTimeout(self.timerIn);
 
-                self.timer = setTimeout(function () {
-                    $(target).find(".blog-category-item").removeClass("active");
+                self.content.find(".blog-category-item").removeClass("active");
+                self.getListContainer().hide();
+            });
+
+            $(document).on("click", function (e) {
+                if ($(e.target).parents(".tip-blog-category").length == 0 && $(e.target).parents(".blog-category-list").length == 0) {
+                    self.timer && clearTimeout(self.timer);
+                    self.timerIn && clearTimeout(self.timerIn);
+
+                    self.content.find(".blog-category-item").removeClass("active");
                     self.getListContainer().hide();
-                }, 200);
+                }
             });
 
             self.content.delegate(".tip-blog-category", "mouseenter", function () {

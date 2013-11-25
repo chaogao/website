@@ -1,4 +1,4 @@
-<div class="blog-category">
+<div class="blog-category clearfix">
     <ul class="tab tab-blog-category">
         <li class="tab-item tab-item-active"><a href="javascript:void(0)">按分类</a></li>
         <li class="tab-item"><a href="javascript:void(0)">按时间</a></li>
@@ -20,26 +20,6 @@
             <li class="blog-category-item">
                 图
                 <span class="description">graph(23)</span>
-            </li>
-            <li class="blog-category-item">
-                CSS
-                <span class="description">css(23)</span>
-            </li>
-            <li class="blog-category-item">
-                CSS
-                <span class="description">css(23)</span>
-            </li>
-            <li class="blog-category-item">
-                CSS
-                <span class="description">css(23)</span>
-            </li>
-            <li class="blog-category-item">
-                CSS
-                <span class="description">css(23)</span>
-            </li>
-            <li class="blog-category-item">
-                CSS
-                <span class="description">css(23)</span>
             </li>
         </ul>
     </div>

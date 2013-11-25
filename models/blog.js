@@ -49,6 +49,19 @@ schema.statics.adminBlogs = function (fileds, cb) {
 }
 
 /**
+ * 获取置顶的blog数据
+ */
+schema.statics.topBlog = function (fileds, cb) {
+    var self = this;
+
+    fileds = fileds || Blog.Const.MIDDLE_FILEDS;
+
+    self.findOne({top: true}, fileds, function (error, blog) {
+        cb && cb(error, blog);
+    });
+}
+
+/**
  * 置顶blog
  * @param {string}   id   需要置顶的id
  * @param {function} [cb] 回调函数
