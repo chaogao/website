@@ -37,3 +37,56 @@
         color: @x-gray-text;
     }
 }
+
+.blog-form {
+    float: left;
+    width: 600px;
+    border-right: 1px dashed @x-gray;
+
+    p span {
+        display: inline-block;
+        margin-right: 10px;
+        width: 60px;
+        text-align: right;
+    }
+
+    p input {
+        width: 300px;
+    }
+
+    textarea,
+    .content-hidden {
+        padding: 0;
+        border: 1px solid @x-gray;
+        width: 500px;
+        line-height: 20px;
+        word-break: break-word;
+        overflow-y: visible;
+    }
+
+    textarea {
+        min-height: 320px;
+    }
+
+    .content-hidden {
+        min-height: 300px;
+    }
+
+    .sync-check {
+        vertical-align: middle;
+        margin-right: 5px;
+    }
+}
+
+.marked-content {
+    margin-left: 610px;
+    margin-top: 157px;
+    border: 1px solid @x-gray;
+    padding: 10px 20px;
+}
+
+.category-title {
+    margin: 0 0 5px 10px;
+    font-size: 16px;
+    font-weight: bold;
+}

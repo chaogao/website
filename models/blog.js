@@ -12,8 +12,8 @@ schema = mongoose.Schema({
     date: Date,
     tags: Array,
     content: String,
-    bg: String,
-    titleBg: String,
+    bg: {type: String, default: ""},
+    titleBg: {type: String, default: ""},
     top: {type: Boolean, default: false},
     draft: {type: Boolean, default: true}
 });
@@ -62,6 +62,42 @@ schema.statics.topBlog = function (fileds, cb) {
 }
 
 /**
+ * blog的详细信息，并包括上一个、下一个的简略信息
+ */
+schema.statics.viewBlog = function (id, cb) {
+    var self = this,
+        datas;
+
+    datas = {};
+
+    self.findById(id).exec(function (error, blog) {
+        datas.blog = blog;
+
+        if (blog) {
+            self.find({_id: {$lt: blog.id}}).select(Blog.Const.MIN_FILEDS).sort({_id: -1}).limit(1).exec(function(error, blogs) {
+                console.log(blogs);
+
+                if (blogs.length > 0) {
+                    datas.pre = blogs[0];
+                }
+
+                self.find({_id: {$gt: blog.id}}).select(Blog.Const.MIN_FILEDS).sort({_id: 1}).limit(1).exec(function (error, blogs) {
+                    console.log(blogs);
+
+                    if (blogs.length > 0) {
+                        datas.next = blogs[0];
+                    }
+
+                    cb(error, datas);
+                });
+            });
+        } else {
+            cb(error, datas);
+        }
+    });
+}
+
+/**
  * 置顶blog
  * @param {string}   id   需要置顶的id
  * @param {function} [cb] 回调函数
@@ -82,7 +118,7 @@ schema.statics.setTop = function (id, cb) {
 Blog = mongoose.model("Blog", schema);
 
 Blog.Const = {};
-Blog.Const.MIN_FILEDS = "title date top draft";
+Blog.Const.MIN_FILEDS = "title date description top draft";
 Blog.Const.MIDDLE_FILEDS = "title author description date tags bg titleBg top draft";
 Blog.Const.FULL_FILEDS = "title author description date tags bg titleBg content top draft";
 

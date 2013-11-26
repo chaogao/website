@@ -23,24 +23,42 @@
 
         self.deleagesEvents();
         self.getArticle(id);
+        self.getBg();
     };
 
     Article.Const = {};
     Article.Const.T_SUGGESTION = '<h3>相关推荐</h3>' +
         '[% if (pre) { %]' +
-            '<dl class="pre" data-id="[%= pre.id %]">' +
-                '<dt><a href="javascript:void(0);">上一篇：[%=pre.title%]</a></dt>' +
+            '<dl class="pre" data-id="[%= pre._id %]">' +
+                '<dt><a href="/blog/[%=pre._id%]">上一篇：[%=pre.title%]</a></dt>' +
                 '<dd>[%=pre.description%]</dd>' +
             '</dl>' +
         '[% } %]' +
         '[% if (next) { %]' +
-            '<dl class="next" data-id="[%= next.id %]">' +
-                '<dt><a href="javascript:void(0);">上一篇：[%=next.title%]</a></dt>' +
+            '<dl class="next" data-id="[%= next._id %]">' +
+                '<dt><a href="/blog/[%=next._id%]">下一篇：[%=next.title%]</a></dt>' +
                 '<dd>[%=next.description%]</dd>' +
             '</dl>' +
         '[% } %]';
 
     $.extend(Article.prototype, {
+        /**
+         * 获取背景图片
+         */
+        getBg: function () {
+            var url = $(".blog-article-cover").data("image"),
+                img = new Image();
+
+            img.onload = function () {
+                $(".blog-article-cover .bg-wrap").css("background-image", "url(" + url + ")").hide().fadeIn(1000);
+                $("#action-read").fadeIn(1000);
+            }
+
+            img.onerror = function () {
+                $("#action-read").show();
+            }
+            img.src = url;
+        }, 
         /**
          * 修正图片的宽高
          */
@@ -64,12 +82,11 @@
             var self = this;
 
             $.ajax({
-                url: "/blog/" + id,
+                url: "/blog/view/" + id,
                 dataType: "json",
                 data: {json: true},
                 success: function (json) {
-                    self.articleData = json;
-                    // self.suggestionsData = json.suggestions;
+                    self.json = json;
                     $(self).trigger("recivedata", [{data: json}]);
                 }
             });
@@ -81,7 +98,7 @@
             var self = this;
 
             self.content.delegate(".read, .infomation a", "click", function() {
-                if (self.articleData) {
+                if (self.json) {
                     self.initArticle();
                 } else {
                     $(self).one("recivedata", function () {
@@ -95,7 +112,6 @@
          */
         initArticle: function () {
             var self = this,
-                data = self.articleData,
                 dfd;
 
             dfd = $.Deferred(function (dfd) {
@@ -103,7 +119,7 @@
                     dfd.resolve();
                 });
             }).done(function () {
-                self.content.find(".blog-article-content").html(data.content);
+                self.content.find(".blog-article-content").html(marked(self.json.blog.content)).fadeIn();
                 self.analyseCategory();
                 self.initSuggestions();
                 self.titleAndFooter();
@@ -117,11 +133,14 @@
             var self = this,
                 html;
                 
-            if (!self.suggestionsData) {
+            if (!self.json.next && !self.json.pre) {
                 return false;
             }
 
-            html = new EJS({text: Article.Const.T_SUGGESTION}).render(self.suggestionsData);
+            html = new EJS({text: Article.Const.T_SUGGESTION}).render({
+                pre: self.json.pre,
+                next: self.json.next
+            });
 
             self.content.find(".blog-article-suggest").html(html).show();
         },
@@ -130,9 +149,9 @@
          */
         titleAndFooter: function () {
             var self = this,
-                data = self.articleData;
+                blog = self.json.blog;
 
-            self.content.find(".blog-article-content").prepend('<h1 style="background: url(' + data.titleBg + ') no-repeat top right" class="blog-article-title">' + data.title + '</h2>' + '<p class="blog-article-date">' + data.author + ' post at: ' + data.date + '</p>');
+            self.content.find(".blog-article-content").prepend('<h1 style="background: url(' + blog.titleBg + ') no-repeat top right" class="blog-article-title">' + blog.title + '</h2>' + '<p class="blog-article-date">' + blog.author + ' post at: ' + blog.date + '</p>');
         },
         /**
          * 分析目录
@@ -200,7 +219,7 @@
                 getText: function (treeNode) {
                     var text = self.getStrLength(treeNode.text) > 30 ? self.SubString(treeNode.text, 28) + '...' : treeNode.text;
 
-                    return '<a href="javascript:vodi(0)" data-cate-id="' + treeNode.id + '" title="' + treeNode.text + '" >' + text + '</a>';
+                    return '<a href="javascript:void(0)" data-cate-id="' + treeNode.id + '" title="' + treeNode.text + '" >' + text + '</a>';
                 }
             });
 

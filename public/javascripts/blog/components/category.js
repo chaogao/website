@@ -71,7 +71,7 @@
         delegatesEvents: function () {
             var self = this;
 
-            self.content.delegate(".blog-category-item", "mouseenter", function () {
+            self.content.delegate(".blog-category-item", "click", function () {
                 var listContainer = self.getListContainer(),
                     target = this,
                     dfd;
@@ -101,7 +101,7 @@
                         listContainer.getElement().html(new EJS({text: Category.Const.T_BLOG_ARTICLES}).render(json));
                         listContainer.pager = new Pagination(listContainer.getElement().find(".blog-articles-page"), Category.Const.C_PAGINATION);
                     });
-                }, 200);
+                }, 50);
             });
 
             self.content.delegate(".action-close", "click", function() {

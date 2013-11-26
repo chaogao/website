@@ -13,6 +13,7 @@
     "deferred": "*",
     "connect-flash": "*",
     "connect-mongo": "*",
-    "date-utils": "*"
+    "date-utils": "*",
+    "markdown": "*"
   }
 }

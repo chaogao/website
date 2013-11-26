@@ -26,5 +26,4 @@
     <h2>Tags</h2>
     
 <% include ../../layouts/footer.tpl %>
-
 <script src="/public/javascripts/admin/index.js"></script>
