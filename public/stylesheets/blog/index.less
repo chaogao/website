@@ -183,7 +183,11 @@
         }
 
         li ul {
-            margin-left: 20px;
+            margin-left: 10px;
+        }
+
+        .treeview-list-root {
+            padding-left: 12px;
         }
 
         .treeview-list-root:after {
@@ -206,14 +210,15 @@
         }
 
         .treeview-node-father {
+            position: relative;
+            margin-bottom: 10px;
+
             > a {
                 .x-yahei;
                 margin-bottom: 5px;
                 font-size: 12px;
                 font-weight: bold;
             }
-
-            margin-bottom: 10px;
         }
 
         .treeview-node-father-expanded {
@@ -227,9 +232,9 @@
         }
 
         .treeview-toggle {
-            position: relative;
-            margin-right: 5px;
-            top: 1px;
+            position: absolute;
+            top: 6px;
+            left: -14px;
             display: inline-block;
             font-family: 'Glyphicons Halflings';
             -webkit-font-smoothing: antialiased;
