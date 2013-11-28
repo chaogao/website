@@ -1,5 +1,7 @@
 module.exports = {
-    "host": "localhost",
+    "host": "42.96.164.234",
     "db": "website",
-    "cookieSecret": "website"
+    "cookieSecret": "website",
+    "user": "website",
+    "pass": "4085903.com"
 }

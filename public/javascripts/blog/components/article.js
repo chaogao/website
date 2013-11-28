@@ -159,7 +159,8 @@
         analyseCategory: function () {
             var self = this,
                 article = self.content.find(".blog-article-content"),
-                count = 8, i = 1, datas = [], treeDatas = [], titles, id = 0;
+                count = 8, i = 1, datas = [], treeDatas = [], titles, id = 0,
+                reg = /<span class="tree-menu">(.*)<\/span>/;
 
             for (i; i <= 8; i++) {
                 titles = article.find("h" + i);
@@ -174,28 +175,26 @@
             }
 
             function getTreeNode (root, level) {
-                var reg, key;
+                var key, levelMenuText;
 
-                if (!datas[level] || !/^\[(.*)\]/.test(root.text)) {
+                if (!datas[level]) {
                     return;
                 }
 
-                key = /^\[(.*)\]/.exec(root.text)[1];
-
-                reg = new RegExp("\\[" + key + ".*\\]");
+                levelMenuText = reg.exec(root.text)[1];
 
                 root.children = [];
 
-                $.each(datas[level], function () {
+                $.each(datas[level], function (i) {
                     var node = {
-                        text: $(this).text(),
+                        text: '<span class="tree-menu">' + levelMenuText + "." + (i + 1) + "</span>" + $(this).text(),
                         id: $(this).data("title-id")
                     };
 
-                    if (reg.test(node.text)) {
-                        root.children.push(node);
-                        getTreeNode(node, ++level);
-                    }
+                    // if (reg.test(node.text)) {
+                    root.children.push(node);
+                    getTreeNode(node, (level + 1));
+                    // }
                 });
             }
 
@@ -203,10 +202,10 @@
                 return false;
             }
 
-            $.each(datas[0], function () {
+            $.each(datas[0], function (i) {
                 var root = {};
 
-                root.text = $(this).text();
+                root.text = '<span class="tree-menu">' + (i + 1) + '</span>' + $(this).text();
                 root.id = $(this).data("title-id");
 
                 getTreeNode(root, 1);
@@ -217,9 +216,9 @@
             self.treeView = new TreeView(treeDatas, {
                 content: ".blog-article-category",
                 getText: function (treeNode) {
-                    var text = self.getStrLength(treeNode.text) > 30 ? self.SubString(treeNode.text, 28) + '...' : treeNode.text;
+                    var text = /<span class="tree-menu">.*<\/span>(.*)/.exec(treeNode.text)[1];
 
-                    return '<a href="javascript:void(0)" data-cate-id="' + treeNode.id + '" title="' + treeNode.text + '" >' + text + '</a>';
+                    return '<a href="javascript:void(0)" data-cate-id="' + treeNode.id + '" title="' + text + '" >' + treeNode.text + '</a>';
                 }
             });
 

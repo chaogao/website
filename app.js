@@ -27,7 +27,10 @@ app.use(express.session({
     secret: conf.cookieSecret,
     cookie: {maxAge: 1000 * 60 * 60 * 24 * 30},
     store: new MongoStore({
-        db: conf.db
+        db: conf.db,
+        host: conf.host,
+        username: conf.user,
+        password: conf.pass
     })
 }));
 app.use(flash());
