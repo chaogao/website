@@ -174,27 +174,31 @@
                 }
             }
 
-            function getTreeNode (root, level) {
-                var key, levelMenuText;
+            function getTreeNode (root, level, rootNode) {
+                var key, levelMenuText, allAllowTrees, nodeName, selectNodeName, children;
 
                 if (!datas[level]) {
                     return;
                 }
 
+                root.children = [];
                 levelMenuText = reg.exec(root.text)[1];
 
-                root.children = [];
+                nodeName = $(rootNode).prop("nodeName"); // 获取nodename
+                selectNodeName = $(datas[level][0]).prop("nodeName"); //获取将要选择的nodename
+ 
+                allAllowTrees = $(rootNode).nextUntil(nodeName); // 获取同级兄弟元素到相同的nodename（同级）处停止
+                children = allAllowTrees.find(selectNodeName);
 
-                $.each(datas[level], function (i) {
+
+                $.each(children, function (i) {
                     var node = {
                         text: '<span class="tree-menu">' + levelMenuText + "." + (i + 1) + "</span>" + $(this).text(),
                         id: $(this).data("title-id")
                     };
 
-                    // if (reg.test(node.text)) {
                     root.children.push(node);
-                    getTreeNode(node, (level + 1));
-                    // }
+                    getTreeNode(node, (level + 1), this);
                 });
             }
 
@@ -208,7 +212,7 @@
                 root.text = '<span class="tree-menu">' + (i + 1) + '</span>' + $(this).text();
                 root.id = $(this).data("title-id");
 
-                getTreeNode(root, 1);
+                getTreeNode(root, 1, this);
 
                 treeDatas.push(root);
             });

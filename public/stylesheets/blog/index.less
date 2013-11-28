@@ -170,6 +170,7 @@
         width: 240px;
         padding: 10px 10px 20px 0;
         font-size: 12px;
+        line-height: 28px;
 
         ul {
             .x-unstyle;
@@ -178,7 +179,6 @@
             a {
                 .x-transition(color, .3s);
                 text-decoration: none;
-                line-height: 22px;
             }
         }
 
@@ -209,9 +209,8 @@
             > a {
                 .x-yahei;
                 margin-bottom: 5px;
-                font-size: 14px;
+                font-size: 12px;
                 font-weight: bold;
-                line-height: 32px;
             }
 
             margin-bottom: 10px;
@@ -228,16 +227,39 @@
         }
 
         .treeview-toggle {
-            .x-ceil(32px, @x-green-smoke);
+            position: relative;
             margin-right: 5px;
-            background-image: url("/public/images/blog/icons/plus2-32.png?__sprite");
-            vertical-align: bottom;
+            top: 1px;
+            display: inline-block;
+            font-family: 'Glyphicons Halflings';
+            -webkit-font-smoothing: antialiased;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 16px;
+            line-height: 1;
+            vertical-align: text-bottom;
+            -moz-osx-font-smoothing: grayscale;
             cursor: pointer;
 
-            &.treeview-toggle-expanded {
-                background-color: @x-blue-smoke;
-                background-image: url("/public/images/blog/icons/minus2-32.png?__sprite");
+            &:before {
+                content: "\e026";
             }
+
+            &.treeview-toggle-expanded {
+                &:before {
+                    content: "\e027";
+                }
+            }
+
+            &:hover {
+                color: @x-blue-link;
+            }
+        }
+
+        .tree-menu {
+            background-color: @x-gray;
+            padding: 0 5px;
+            margin: 0 5px;
         }
 
         &.affix {

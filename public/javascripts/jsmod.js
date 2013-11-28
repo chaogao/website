@@ -1735,7 +1735,7 @@ define("jsmod/ui/treeView", function (require, exports, module) {
                     li = $('<li class="treeview-node"></li>').html(self.option.getText ? self.option.getText(treeNode) : treeNode.text);
                     root.append(li);
 
-                    if (!treeNode.children) {
+                    if (!treeNode.children || treeNode.children.length == 0) {
                         li.addClass("treevie-leaf");
                         return;
                     }
