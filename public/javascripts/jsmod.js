@@ -135,6 +135,164 @@ if (!window.define && !window.require) {
     })(this);
 }
 ;/**
+ * Dialog模块，居中定位，并显示遮罩图层，不能同时打开两个Dialog
+ * 当显示dialog时会判断当前是否有正在显示的dialog
+ * z-index 超过1000的元素不会被覆盖
+ * @module jsmod/ui/dialog
+ */
+define("jsmod/ui/dialog", function(require, exports, module) {
+    var Dialog, _option;
+
+    var ie6 = 'undefined' == typeof(document.body.style.maxHeight);
+
+    _option = {};
+
+    /**
+     * @constructor
+     * @alias module:jsmod/ui/dialog
+     * @param {object} option
+     * @param {int}    option.width     宽度
+     * @param {int}    option.height    高度
+     * @param {string} option.html      html代码
+     * @param {object} [option.buttons] key标识button的value，参数为function标识button点击后的操作
+     * @param {Coords} [option.offset]  定位时的偏移 - @see {@link Coords}
+     */
+    Dialog = function (option) {
+        var self = this;
+
+        self.option = $.extend({}, _option, option);
+        self.init();
+    }
+
+    /**
+     * 重置frame窗体中的内容
+     */
+    Dialog.resetFrame = function () {
+        var frame = $(".mod-dialog-frame");
+
+        if (frame.length == 0) {
+            if (ie6) {
+                Dialog.frame = $('<div class="mod-dialog-frame" style="overflow:hidden; display:none; position: absolute; left:0; top: 0; right:0; bottom: 0; z-index: 1000; background-color: rgba(63, 63, 63, 0.7); *background-color: #3F3F3F"></div>').appendTo("body");
+                Dialog.frame.css("width", $(window).width() + "px");
+                Dialog.frame.css("height", $(window).height() + "px");
+            } else {
+                Dialog.frame = $('<div class="mod-dialog-frame" style="overflow:hidden; display:none; position: fixed; left:0; top: 0; right:0; bottom: 0; z-index: 1000; background-color: rgba(63, 63, 63, 0.7); *background-color: #3F3F3F"></div>').appendTo("body");
+            }
+        }
+
+        if (frame.find(".mod-dialog-wrap").length > 0) {
+             frame.find(".mod-dialog-wrap").detach();
+        }
+    }
+
+    if (!Dialog.keyEvent) {
+        $(document).on("keydown.dialog", function (e) {
+            if (e.keyCode == 27) {
+                Dialog._instance && Dialog._instance.hide();
+            }
+        });
+
+        Dialog.keyEvent = true;
+    }
+
+    /**
+     * 禁止esc触发关闭
+     */
+    Dialog.disableKeyEvent = function () {
+        $(document).off("keydown.dialog");
+    }
+
+    $.extend(Dialog.prototype, 
+        /**
+         * @lends module:jsmod/ui/dialog.prototype
+         */ 
+        {   
+            /**
+             * 初始化弹出内容，并绑定各种事件
+             */
+            init: function () {
+                var self = this,
+                    element;
+
+                element = $(self.option.html);
+                self.content = $('<div style="overflow:hidden; overflow-y: auto; position: absolute; background-color: #FFFFFF;" class="mod-dialog-wrap"></div>').append(element);
+
+                self.option.width && self.content.css("width", self.option.width + "px");
+                self.option.height && self.content.css("height", self.option.height + "px");
+            },
+            /**
+             * 显示弹窗
+             * @public
+             * @param {object} option         配置项
+             * @param {bool}   [option.fade]  渐变效果
+             * @public
+             */
+            show: function (option) {
+                var self = this;
+
+                option = option || {};
+
+                Dialog.resetFrame();
+                $("body").css("overflow", "hidden");
+
+                Dialog.frame.show();
+
+                if (option.fade) {
+                    self.content.hide().appendTo(Dialog.frame).fadeIn();
+                } else {
+                    Dialog.frame.append(self.content);
+                }
+
+                self.adjuestPosition();
+
+                Dialog._instance = self;
+            },
+            /**
+             * 隐藏弹窗
+             * @public
+             * @param {object} option         配置项
+             * @param {bool}   [option.fade]  渐变效果
+             * @public
+             */
+            hide: function (option) {
+                var self = this;
+
+                option = option || {};
+
+                $("body").css("overflow", "");
+
+                if (option.fade) {
+                    Dialog.frame.fadeOut();
+                } else {
+                    Dialog.frame.hide();
+                }
+            },
+            /**
+             * 调整位置
+             * @public
+             */
+            adjuestPosition: function () {
+                var self = this,
+                    offset = self.option.offset || {},
+                    wHeight, wWidth, height, width;
+
+                wHeight = Dialog.frame.height();
+                wWidth = Dialog.frame.width();
+
+                height = self.content.height();
+                width = self.content.width();
+
+                self.content.css("top", parseInt(wHeight / 2 - height / 2 + (offset.top || 0)) + "px");
+                self.content.css("left", parseInt(wWidth / 2 - width / 2 + (offset.left || 0)) + "px");
+            }
+
+        }
+    );
+
+    module.exports = Dialog;
+});
+
+;/**
  * 固定位置元素模块
  * @module jsmod/ui/fixElement
  */

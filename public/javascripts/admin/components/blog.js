@@ -88,3 +88,66 @@
         $("#sync-check").prop("checked", false);
     }
 })();
+
+
+/**
+ * 上传图片组建
+ */
+(function () {
+    var Dialog = require("jsmod/ui/dialog"),
+        Upload, upload;
+
+    Upload = function (option) {
+        var html = [
+            '<div class="pic-component">',
+                '图片：<input type="file" name="image">',
+                '<input type="hidden" name="blogId" value="' + option.blogId + '">',
+                '<a class="submit" href="javascript:void(0)">提交</a>&nbsp;',
+                '<a class="close" href="javascript:void(0)">取消</a></br>',
+                '<img height="100" class="pic-component-image">',
+            '</div>'
+        ].join(""), self = this;
+
+        self.dialog = new Dialog({
+            html: html
+        });
+
+        self.dialog.content.find(".close").click(function () {
+            self.hide();
+        });
+
+        self.dialog.content.find("[name=image]").on("change", function (e) {
+            var file = e.target.files[0],
+                reader;
+
+            reader = new FileReader();
+            reader.onload = function (e) {
+                var dataURL = e.target.result;
+
+                self.dialog.content.find(".pic-component-image").prop("src", dataURL);
+            }
+            reader.readAsDataURL(file);
+        })
+    }
+
+    $.extend(Upload.prototype, 
+        {
+            show: function () {
+                this.dialog.show();
+            },
+            hide: function () {
+                this.dialog.hide();
+            }
+        }
+    );
+
+    $("#upload").click(function () {
+        if (!upload) {
+            upload = new Upload({
+                blogId: $(".blog-form").find("[name='blog[id]']").val()
+            });
+        }
+
+        upload && upload.show();
+    });
+})();

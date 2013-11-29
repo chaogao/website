@@ -31,6 +31,8 @@
 
         <input type="submit" value="提交">
         <a id="sync" href="javascript:void(0)">同步</a>
+        <a id="upload" href="javascript:void(0)">图片</a>
+
         <span>实时</span><input class="sync-check" type="checkbox" id="sync-check"/>
 
         <input type="hidden" name="blog[id]" value="<%= blog.id %>">
