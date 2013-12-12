@@ -2,11 +2,17 @@
  * 管理blog的相关action
  * @module admin/blog
  */
-var Blog = require("../../models/blog.js"),
+var fs = require("fs"),
+    path = require("path"),
+    Blog = require("../../models/blog"),
     util = require("./util"),
+    UPYun = require('../../plugin/upyun').UPYun,
     dateUtil = require("date-utils"),
-    NEED_CHECK_ROUTES;
+    upyun, NEED_CHECK_ROUTES, YUNDOMAIN;
 
+
+upyun = new UPYun("website-doudougou", "doudougou", "4085903gougou");
+YUNDOMAIN = "http://website-doudougou.b0.upaiyun.com";
 
 NEED_CHECK_ROUTES = [
     {
@@ -36,6 +42,10 @@ NEED_CHECK_ROUTES = [
     {
         "method": "post",
         "url": "/admin/blogtop"
+    },
+    {
+        "method": "post",
+        "url": "/admin/upload"
     }
 ];
 
@@ -167,5 +177,29 @@ exports.init = function (app) {
                 }
             });
         }
+    });
+
+    /**
+     * 上传文件接口
+     */
+    app.post("/admin/upload", function (req, res) {
+        var file, buffer, basename;
+
+        file = req.files.image;
+        basename = path.basename(file.path);
+
+        if (file.size <= 0 || file.size > 102400 * 2) {
+            return res.json({code: -1, msg: "no valid input"});
+        }
+
+        buffer = fs.readFileSync(file.path);
+
+        upyun.writeFile("/" + basename, buffer, true, function (error, msg) {
+            if (!error) {
+                res.json({code: 0, url: YUNDOMAIN + "/" + basename});
+            } else {
+                res.json({code: -1, msg: "server error"});
+            }
+        });
     });
 }

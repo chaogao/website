@@ -25,7 +25,7 @@
 
         <p>
             <span>正文</span>
-            <textarea name="blog[content]"></textarea>
+            <div name="blog[content]" id="editor"></div>
             <div class="content-hidden" style="display:none;"></div>
         </p>
 
@@ -39,4 +39,5 @@
     <div class="marked-content"></div>
 
 <% include ../../layouts/footer.tpl %>
+<script src="/public/javascripts/ace-builds-master/ace.js"></script>
 <script src="/public/javascripts/admin/index.js"></script>

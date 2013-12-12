@@ -23,17 +23,14 @@
             <input name="blog[titleBg]" value="<%= blog.titleBg %>">
         </p>
 
-        <p>
+        <div class="editor-content">
             <span>正文</span>
-            <textarea name="blog[content]"><%= blog.content %></textarea>
-            <div class="content-hidden" style="display:none;"></div>
-        </p>
-
-        <input type="submit" value="提交">
-        <a id="sync" href="javascript:void(0)">同步</a>
-        <a id="upload" href="javascript:void(0)">图片</a>
-
-        <span>实时</span><input class="sync-check" type="checkbox" id="sync-check"/>
+            <a id="sync" href="javascript:void(0)">同步</a>
+            <a id="upload" href="javascript:void(0)">图片</a>
+            <input type="submit" value="提交">
+            <div id="editor"></div>
+            <textarea class="editor-textarea" style="display:none;" name="blog[content]"><%= blog.content %></textarea>
+        </div>
 
         <input type="hidden" name="blog[id]" value="<%= blog.id %>">
     </form>
@@ -41,4 +38,5 @@
     <div class="marked-content"></div>
 
 <% include ../../layouts/footer.tpl %>
+<script src="/public/javascripts/ace-builds-master/src-noconflict/ace.js"></script>
 <script src="/public/javascripts/admin/index.js"></script>

@@ -51,42 +51,65 @@
             });
         };
     });
+})();
 
+/**
+ * 日志编辑功能
+ */
+(function () {
+    var editor;
     /**
      * markdown 同步
      */
     $("#sync").click(function () {
-        var val = $(".blog-form textarea").val(),
-            html;
+        var html;
 
-        html = marked(val);
+        html = marked(editor.getValue());
         $(".marked-content").html(html);
     });
 
     /**
-     * textarea 自动增长
+     * 初始化ace
      */
-    $(".blog-form textarea").on("keyup", function () {
-        var html = $(this).val(),
-            val = $(this).val(),
-            height, markedHtml;
+    if ($("#editor").length > 0) {
+        var val;
 
-        html = html.replace(/\n/g, "</br>");
-        html += "</br>";
-        height = $(".content-hidden").html(html).height() + 20;
-        $(this).css("height", height + "px");
+        $(".editor-content").height($(window).height());
+        $(".marked-content").height($(window).height() - 50);
 
-        if ($("#sync-check").prop("checked")) {
-            markedHtml = marked(val);
-            $(".marked-content").html(markedHtml);
-        }
-    });
+        editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.getSession().setMode("ace/mode/markdown");
+        editor.setShowPrintMargin(false);
+        editor.commands.addCommand({
+            name: 'myCommand',
+            bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+            exec: function(editor) {
+                $("#sync").click();
+            },
+            readOnly: true
+        });
+        editor.getSession().addEventListener("changeScrollTop", function (top) {
+            var sHeight = editor.getSession().getLength() * editor.renderer.lineHeight,
+                sPer = top / sHeight,
+                height, top;
 
-    if ($(".blog-form textarea").val()) {
-        $("#sync-check").prop("checked", true);
-        $(".blog-form textarea").trigger("keyup");
-        $("#sync-check").prop("checked", false);
+            height = $(".marked-content").get(0).scrollHeight;
+            top = height * sPer;
+            $(".marked-content").scrollTop(parseInt(top));
+        });
+
+        val = $(".blog-form .editor-textarea").val();
+        editor.setValue(val);
     }
+
+    $(".blog-form input[type=submit]").on("click", function () {
+        var val = editor.getValue();
+
+        $(".blog-form .editor-textarea").val(val);
+        $(".blog-form").submit();
+        return false;
+    });
 })();
 
 
@@ -99,13 +122,14 @@
 
     Upload = function (option) {
         var html = [
-            '<div class="pic-component">',
+            '<form class="pic-component" method="post" action="/admin/upload" enctype="multipart/form-data" id="pic-component">',
                 '图片：<input type="file" name="image">',
                 '<input type="hidden" name="blogId" value="' + option.blogId + '">',
-                '<a class="submit" href="javascript:void(0)">提交</a>&nbsp;',
+                '<button class="submit">提交</button>&nbsp;',
                 '<a class="close" href="javascript:void(0)">取消</a></br>',
                 '<img height="100" class="pic-component-image">',
-            '</div>'
+                '<p class="info"></p>',
+            '</form>'
         ].join(""), self = this;
 
         self.dialog = new Dialog({
@@ -120,6 +144,7 @@
             var file = e.target.files[0],
                 reader;
 
+            self.file = file;
             reader = new FileReader();
             reader.onload = function (e) {
                 var dataURL = e.target.result;
@@ -127,7 +152,21 @@
                 self.dialog.content.find(".pic-component-image").prop("src", dataURL);
             }
             reader.readAsDataURL(file);
-        })
+        });
+
+        self.dialog.content.find(".submit").on("click", function (e) {
+            if (self.file && self.file.size <= 102400 * 2 && /image/.test(self.file.type)) {
+                self.upload(function (json) {
+                    if (!json || json.code) {
+                        self.dialog.content.find(".info").html("error");
+                    } else {
+                        self.dialog.content.find(".info").html("![Alt text](" + json.url + ")");
+                    }
+                });
+            }
+
+            return false;
+        });
     }
 
     $.extend(Upload.prototype, 
@@ -137,6 +176,24 @@
             },
             hide: function () {
                 this.dialog.hide();
+            },
+            upload: function (cb) {
+                var xhr = new XMLHttpRequest(),
+                    fd = new FormData($("#pic-component").get(0));
+
+                if (xhr.upload) {
+                    xhr.open("POST", "/admin/upload", true);
+                    xhr.onreadystatechange = function(e) {
+                        if (xhr.readyState == 4) {
+                            if (xhr.status == 200) {
+                                cb && cb(JSON.parse(xhr.responseText));
+                            } else {
+                                cb && cb(0);
+                            }
+                        }
+                    };
+                    xhr.send(fd);
+                }
             }
         }
     );

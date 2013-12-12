@@ -36,7 +36,12 @@ app.use(express.session({
 app.use(flash());
 app.use(express.favicon());
 app.use(express.logger('dev'));
-app.use(express.bodyParser());
+app.use(express.bodyParser(
+    {
+        uploadDir: "./public/upload",
+        keepExtensions: true
+    }
+));
 app.use(express.methodOverride());
 app.use(function (req, res, next) {
     res.locals.user = req.session.user;

@@ -40,7 +40,7 @@
 
 .blog-form {
     float: left;
-    width: 600px;
+    width: 800px;
     border-right: 1px dashed @x-gray;
 
     p span {
@@ -54,53 +54,38 @@
         width: 300px;
     }
 
-    textarea,
-    .content-hidden {
-        padding: 0;
-        border: 1px solid @x-gray;
-        width: 500px;
-        line-height: 20px;
-        word-break: break-word;
-        overflow-y: visible;
-    }
+    .editor-content {
+        height: 650px;
+        position: relative;
 
-    textarea {
-        min-height: 320px;
-    }
+        #editor {
+            position: absolute;
+            top: 50px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }        
 
-    .content-hidden {
-        min-height: 300px;
+        #sync,
+        #upload {
+            .x-ceil(35px);
+            line-height: 35px;
+            background-color: @x-orange-smoke;
+        }
     }
 
     .sync-check {
         vertical-align: middle;
         margin-right: 5px;
     }
-
-    #sync {
-        .x-ceil(35px);
-        position: fixed;
-        top: 350px;
-        left: 20px;
-        line-height: 35px;
-        background-color: @x-orange-smoke;
-    }
-
-    #upload {
-        .x-ceil(35px);
-        position: fixed;
-        top: 390px;
-        left: 20px;
-        line-height: 35px;
-        background-color: @x-orange-smoke;
-    }
 }
 
 .marked-content {
-    margin-left: 610px;
-    margin-top: 157px;
+    margin-left: 810px;
+    margin-top: 215px;
     border: 1px solid @x-gray;
     padding: 10px 20px;
+    overflow: auto;
 }
 
 .category-title {
