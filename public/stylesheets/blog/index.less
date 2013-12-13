@@ -288,15 +288,20 @@
         }
 
         .read {
-            .x-ceil(100px, fade(@x-green-dark, 80%));
+            .x-ceil(200px, fade(@x-green-dark, 80%));
             .x-yahei;
             position: absolute;
-            border: 2px solid @x-blue;
             line-height: 100px;
             color: @x-white;
             font-size: 32px;
             font-weight: bold;
             text-decoration: none;
+            background: url("/public/images/blog/du.png?__sprite") no-repeat;
+            background-color: fade(@x-white-smoke, 60%);
+
+            &:hover {
+                background-color: @x-white-smoke;
+            }
         }
 
         .infomation {

@@ -72,8 +72,8 @@
 
             $(".blog-article-cover").height(rHeight);
 
-            $(".blog-article-cover .read").css("left", parseInt(Math.random() * (rWidth - 150)) + "px");
-            $(".blog-article-cover .read").css("top", parseInt(Math.abs(rHeight - 150 - 240)  * Math.random() + 240) + "px");
+            $(".blog-article-cover .read").css("left", parseInt(Math.random() * (rWidth - 250)) + "px");
+            $(".blog-article-cover .read").css("top", parseInt(Math.abs(rHeight - 250 - 240)  * Math.random() + 240) + "px");
         },
         /**
          * 获取article详情

@@ -22,22 +22,19 @@
             <span>副背景</span>
             <input name="blog[titleBg]">
         </p>
-
-        <p>
-            <span>正文</span>
-            <div name="blog[content]" id="editor"></div>
-            <div class="content-hidden" style="display:none;"></div>
-        </p>
-
-        <input type="submit" value="提交">
-        <a id="sync" href="javascript:void(0)">同步</a>
-        <a id="upload" href="javascript:void(0)">图片</a>
         
-        <span>实时</span><input class="sync-check" type="checkbox" id="sync-check"/>
+        <div class="editor-content">
+            <span>正文</span>
+            <a id="sync" href="javascript:void(0)">同步</a>
+            <a id="upload" href="javascript:void(0)">图片</a>
+            <input type="submit" value="提交">
+            <div id="editor"></div>
+            <textarea class="editor-textarea" style="display:none;" name="blog[content]"></textarea>
+        </div>
     </form>
 
     <div class="marked-content"></div>
 
 <% include ../../layouts/footer.tpl %>
-<script src="/public/javascripts/ace-builds-master/ace.js"></script>
+<script src="/public/javascripts/ace-builds-master/src-noconflict/ace.js"></script>
 <script src="/public/javascripts/admin/index.js"></script>
