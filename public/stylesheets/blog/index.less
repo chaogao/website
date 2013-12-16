@@ -305,31 +305,37 @@
         }
 
         .infomation {
+            .x-yahei();
             position: absolute;
             left: 60px;
-            right: 30px;
+            right: 180px;
             top: 100px;
-            padding: 10px 20px;
+            padding: 30px 20px;
             background: url("/public/images/layouts/texture.png?__sprite") repeat;
-            background-color: fade(@x-gray-smoke, 80%);
+            background-color: fade(@x-black, 60%);
+            z-index: 1;
 
             h2 {
-                .x-yahei();
-                font-size: 32px;
+                margin: 0;
+                padding: 0 0 20px 0;
+                font-size: 58px;
 
                 a {
                     .x-transition(color, .3s);
-                    color: @x-blue-link;
+                    color: @x-gray-smoke;
                     text-decoration: none;
 
                     &:hover {
-                        color: @x-blue;
+                        color: @x-gray;
                     }
                 }
             }
 
             .description {
-                color: @x-gray-text;
+                float: right;
+                padding-left: 300px;
+                font-size: 16px;
+                color: @x-white-smoke;
             }
         }
     }
