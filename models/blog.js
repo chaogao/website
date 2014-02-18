@@ -98,6 +98,24 @@ schema.statics.viewBlog = function (id, cb) {
 }
 
 /**
+ * 通过 tag 获取日志
+ */
+schema.statics.findByTag = function (name, cb) {
+    var self = this,
+        filter;
+        
+    if (!name) {
+        filter = {};
+    } else {
+        filter = {tags: name};
+    }
+
+    self.find(filter).select(Blog.Const.MIN_FILEDS).exec(function () {
+        cb && cb.apply(this, arguments);
+    });
+}
+
+/**
  * 置顶blog
  * @param {string}   id   需要置顶的id
  * @param {function} [cb] 回调函数
@@ -108,7 +126,6 @@ schema.statics.setTop = function (id, cb) {
     self.update({top: true}, {top: false}).exec(function (error) {
         if (!error) {
             self.update({_id: id}, {$set: {top: true}}).exec(function () {
-                debugger;
                 cb && cb.apply(this, arguments);
             });
         }
@@ -118,7 +135,7 @@ schema.statics.setTop = function (id, cb) {
 Blog = mongoose.model("Blog", schema);
 
 Blog.Const = {};
-Blog.Const.MIN_FILEDS = "title date description top draft";
+Blog.Const.MIN_FILEDS = "title tags date description top draft";
 Blog.Const.MIDDLE_FILEDS = "title author description date tags bg titleBg top draft";
 Blog.Const.FULL_FILEDS = "title author description date tags bg titleBg content top draft";
 

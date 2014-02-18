@@ -3,30 +3,6 @@
  */
 
 (function() {
-    var CATAGRORY_TEST_DATAS = {
-        error: 0,
-        articles: [
-            {
-                title: "canvas 设计渲染器",
-                description: "Canvas（片假名：フォーチュン アテリアル）是日本动画公司minori（オーガスト）制作的美少女动画，及其改编的小说、漫画等。简称Canvas。继前作《水夏～SUIKA～》之后minori的第五作。小说的标题是《Canvas -a fairy tale of the two another tale-》，电视动画版的标题是《Canvas -a tale of memories-》，PlayStation 3移植版游戏和PSP版标题则为《Canvas -a fairy tale of the two-》。以吸血鬼题材的校园恋爱故事。",
-                titleBg: "/public/upload/canvas-logo-small.png",
-                date: "2013-06-15"   
-            },
-            {
-                title: "less——可编程的css语言",
-                titleBg: "/public/upload/less-logo.png",
-                description: "LESSCSS是一种动态样式语言，属于CSS预处理语言的一种，它使用类似CSS的语法，为CSS的赋予了动态语言的特性，如变量、继承、运算、函数等，更方便CSS的编写和维护。",
-                date: "2013-07-16"
-            },
-            {
-                title: "canvas 设计渲染器",
-                titleBg: "/public/upload/canvas-logo-small.png",
-                description: "Canvas（片假名：フォーチュン アテリアル）是日本动画公司minori（オーガスト）制作的美少女动画，及其改编的小说、漫画等。简称Canvas。继前作《水夏～SUIKA～》之后minori的第五作。小说的标题是《Canvas -a fairy tale of the two another tale-》，电视动画版的标题是《Canvas -a tale of memories-》，PlayStation 3移植版游戏和PSP版标题则为《Canvas -a fairy tale of the two-》。以吸血鬼题材的校园恋爱故事。",
-                date: "2013-06-15"   
-            }
-        ]
-    };
-
     var Category, FixElement, Pagination;
 
     FixElement = require("jsmod/ui/fixElement");
@@ -40,12 +16,11 @@
     };
 
     Category.Const = {};
-    Category.Const.T_BLOG_ARTICLES = '<a href="javascript:void(0)" class="glyphicon glyphicon-remove-circle action-close"></a>' +
-        '<ul class="blog-articles">' +
-        '[% $.each(articles, function () { %]' +
+    Category.Const.T_BLOG_ARTICLES = '' +
+        '[% $.each(content, function () { %]' +
             '<li class="clearfix">' +
                 '<div class="content">' +
-                    '<a href="javascript:void(0)">[%= this.title %]</a>' + 
+                    '<a href="/blog/[%= this._id %]">[%= this.title %]</a>' + 
                     '<p class="date">' +
                         '[%= this.date %]' +
                     '</p>' +
@@ -57,13 +32,11 @@
                     '</div>' +
                 '</div>' +
             '</li>' +
-        '[% }) %]' + 
-    '</ul>' +
-    '<div class="blog-articles-page"></div>';
+        '[% }) %]';
+
     Category.Const.C_PAGINATION = {
-        pageCount: 20,
-        maxShowPage: 3,
-        textLabel: ["F", "<", ">", "L"],
+        maxShowPage: 8,
+        textLabel: ["First", "<", ">", "Last"],
         preventInitEvent: true
     }
 
@@ -74,34 +47,39 @@
             self.content.delegate(".blog-category-item", "click", function () {
                 var listContainer = self.getListContainer(),
                     target = this,
+                    tagName = $(this).data("tag"),
                     dfd;
 
                 self.timer && clearTimeout(self.timer);
                 self.timerIn && clearTimeout(self.timerIn);
 
 
-                self.timerIn = setTimeout( function() {
+                self.timerIn = setTimeout(function() {
                     if ($(target).hasClass("active")) {
-                    return;
+                        return;
                     }
 
                     $(target).parents("ul").find(".blog-category-item").removeClass("active");
 
                     $(target).addClass("active");
 
-                    dfd = $.Deferred(function(dfd) {
-                        setTimeout(function() {
-                            dfd.resolve(CATAGRORY_TEST_DATAS);
-                        }, 100);
-                    }).done(function (json) {
-                        listContainer.show();
-                        listContainer.pager && listContainer.pager.destroy();
+                    if (!listContainer.getDisplay()) {
+                        listContainer.show({fade: true});
+                    }
+                    listContainer.fixTo($(target), "bottom", {left: 150, top: 0});
+                    listContainer.getElement().find(".blog-articles").html('<li class="loading">loading</li>');
 
-                        listContainer.fixTo($(target), "bottom", {left: 150, top: 0});
-                        listContainer.getElement().html(new EJS({text: Category.Const.T_BLOG_ARTICLES}).render(json));
-                        listContainer.pager = new Pagination(listContainer.getElement().find(".blog-articles-page"), Category.Const.C_PAGINATION);
+                    $.ajax({
+                        url: "/blogtag/" + (tagName || "")
+                    }).done(function (json) {
+                        var total;
+
+                        total = json.content.length;
+
+
+                        listContainer.getElement().find(".blog-articles").html(new EJS({text: Category.Const.T_BLOG_ARTICLES}).render(json));
                     });
-                }, 50);
+                });
             });
 
             self.content.delegate(".action-close", "click", function() {
@@ -109,7 +87,7 @@
                 self.timerIn && clearTimeout(self.timerIn);
 
                 self.content.find(".blog-category-item").removeClass("active");
-                self.getListContainer().hide();
+                self.getListContainer().hide({fade: true});
             });
 
             $(document).on("click", function (e) {
@@ -118,7 +96,7 @@
                     self.timerIn && clearTimeout(self.timerIn);
 
                     self.content.find(".blog-category-item").removeClass("active");
-                    self.getListContainer().hide();
+                    self.getListContainer().hide({fade: true});
                 }
             });
 
@@ -132,16 +110,24 @@
          * 获取存放list的元素
          */
         getListContainer: function () {
-            var self = this;
+            var self = this,
+                Scrollbar = require("jsmod/ui/scrollbar");
 
             if (self.listContainer) {
                 return self.listContainer;
             }
 
-            self.listContainer = new FixElement('<div class="tip-blog-category"></div>', {
+            self.listContainer = new FixElement('<div class="tip-blog-category">' +
+                    '<a href="javascript:void(0)" class="glyphicon glyphicon-remove-circle action-close"></a>' +
+                    '<div class="tip-category-list"><ul class="blog-articles"></ul></div>' + 
+                '</div>', {
                 preventShow: true,
                 targetType: "bottom"
             });
+
+            self.listContainer.getElement().find(".tip-category-list").height($(window).height() - 250);
+
+            new Scrollbar(self.listContainer.getElement().find(".tip-category-list"));
 
             return self.listContainer;
         }

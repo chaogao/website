@@ -72,6 +72,8 @@
 
             $(".blog-article-cover").height(rHeight);
 
+            $(".blog-article-cover .bg-wrap").height(rHeight + 130);
+
             $(".blog-article-cover .read").css("left", parseInt(Math.random() * (rWidth - $("#action-read").height())) + "px");
             $(".blog-article-cover .read").css("top", parseInt(Math.abs(rHeight - $("#action-read").height() - 240)  * Math.random() + 240) + "px");
         },
@@ -120,6 +122,7 @@
                 });
             }).done(function () {
                 self.content.find(".blog-article-content").html(marked(self.json.blog.content)).fadeIn();
+                self.content.find(".blog-article-comment").show();
                 self.analyseCategory();
                 self.initSuggestions();
                 self.titleAndFooter();

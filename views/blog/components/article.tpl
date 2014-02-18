@@ -1,6 +1,10 @@
 <div class="blog-article">
     <div class="blog-article-category" data-spy="affix" data-offset-top="200"></div>
     <div class="blog-article-content"></div>
+    <div class="blog-article-comment">
+        <div id="uyan_frame"></div>
+        <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1894956"></script>
+    </div>
     <div class="blog-article-suggest"></div>
     <div class="blog-article-cover" data-image="<%= blog.bg %>">
         <div class="bg-wrap"></div>

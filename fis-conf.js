@@ -24,6 +24,11 @@ fis.config.merge({
                 useCache: false
             },
             {
+                reg : /^\/public\/(.*\..*)$/i,
+                release : '/public/$1',
+                useCache: false
+            },
+            {
                 reg : /^\/(node_modules|routes|app.js)/i,
                 useCompile: false,
                 isHtmlLike: false,

@@ -57,7 +57,7 @@
  * 日志编辑功能
  */
 (function () {
-    var editor;
+    var editor, tag;
     /**
      * markdown 同步
      */
@@ -109,6 +109,21 @@
         $(".blog-form .editor-textarea").val(val);
         $(".blog-form").submit();
         return false;
+    });
+
+    /** 新增标签 */
+    $(".blog-form .tag-add").on("click", function () {
+        if (!tag) {
+            tag = new (require("admin/blog/components/tags"))(function (name) {
+                $(".blog-form .tags-container").append('<label><input name="blog[tags][]" value="' + name + '"><a class="tag-remove glyphicon glyphicon-remove-circle" href="javascript:void(0)"></a></label>');
+            });
+        }
+
+        tag.open();
+    });
+
+    $(".blog-form .tags-container").on("click", ".tag-remove", function () {
+        $(this).parents("label").remove();
     });
 })();
 

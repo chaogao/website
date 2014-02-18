@@ -11,8 +11,11 @@ var express = require('express'),
     path = require('path'),
     MongoStore = require('connect-mongo')(express),
     conf = require("./db/conf"),
-    app;
+    app, fs, accessLog, errorLog;
 
+fs = require("fs");
+accessLog = fs.createWriteStream('access.log', {flags: 'a'});
+errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 require("./db");
 
 app = express();
@@ -35,7 +38,7 @@ app.use(express.session({
 }));
 app.use(flash());
 app.use(express.favicon());
-app.use(express.logger('dev'));
+app.use(express.logger({stream: accessLog}));
 app.use(express.bodyParser(
     {
         uploadDir: "./public/upload",
@@ -47,16 +50,24 @@ app.use(function (req, res, next) {
     res.locals.user = req.session.user;
     next();
 });
-app.use(app.router);
-
 // development only
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
     app.use("/public", express.static(__dirname + '/public'));
 }
+app.use(app.router);
+app.use(function (err, req, res, next) {
+    var meta = '[' + new Date() + '] ' + req.url + '\n';
+    errorLog.write(meta + err.stack + '\n');
+    next();
+});
 
 blog.init(app);
 admin.init(app);
+
+app.get("*", function (req, res, next) {
+    res.status(404).render("404.tpl");
+});
 
 http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));

@@ -1,32 +1,11 @@
-@import "/public/mixins/common_mixin.less";
+@import "/public/stylesheets/mixins/common_mixin.less";
 
 /** 分类部分的样式 */
 .blog-category {
+    position: relative;
     margin-bottom: 10px;
-    background-color: #F6F9FF;
-
-    .tab-blog-category {
-        .x-unstyle;
-        float: left;
-        width: 60px;
-
-        .tab-item {
-            .x-inline-block;
-            font-size: 14px;
-
-            a {
-                .x-ceil(60px, @x-blue-light, @x-white);
-                line-height: 60px;
-                text-decoration: none;
-            }
-
-            &.tab-item-active a,
-            &.tab-item-active a:hover {
-                color: @x-black;
-                background: #F6F9FF;
-            }
-        }
-    }
+    background-color: rgba(246, 249, 255, 0.5);;
+    z-index: 1;
 
     .blog-category-content {
         height: 100px;
@@ -41,10 +20,15 @@
             .x-ceil(100px, @x-blue, @x-white-smoke);
             .x-yahei;
             position: relative;
+            min-width: 100px;
             margin-right: 10px;
             line-height: 100px;
+            padding-right: 5px;
             font-size: 40px;
             cursor: pointer;
+            text-align: left;
+            text-indent: 5px;
+            overflow: hidden;
 
             .description {
                 position: absolute;
@@ -57,6 +41,7 @@
 
             &.active {
                 z-index: 2;
+                width: auto;
                 background: #f1f0fa;
                 color: @x-gray-text;
             }
@@ -68,15 +53,21 @@
     .x-transition(left, .3s);
     width: 500px;
     padding: 20px;
-    background-color: @x-blue-smoke;
+    background-color: rgba(241, 240, 250, 0.9);
     box-shadow: 2px 2px 2px @x-gray;
 
     .action-close {
         position: absolute;
-        right: 15px;
-        top: 15px;
+        right: -15px;
+        top: 0x;
         font-size: 26px;
         text-decoration: none;
+        z-index: 1;
+        background-color: @x-blue-smoke;
+    }
+
+    .tip-category-list {
+        height: 200px;
     }
 
     .blog-articles {
@@ -123,36 +114,6 @@
 
         .date {
             margin: 5px 0;
-        }
-    }
-
-    .blog-articles-page {
-        overflow: hidden;
-        .page {
-            float: right;
-            width: 260px;
-            overflow: hidden;
-
-            .page-item {
-                .x-transition(background-color, .5s);
-                float: left;
-                margin-right: 5px;
-                border: 1px solid @x-blue-smoke;
-                padding: 5px 10px;
-                text-decoration: none;
-
-                &.page-item-active,
-                &.page-item-active:hover {
-                    color: @x-black;
-                    border: 1px solid @x-white;
-                    background-color: @x-white;
-                }
-
-                &:hover {
-                    background-color: @x-blue;
-                    color: @x-white;
-                };
-            }
         }
     }
 }
@@ -281,6 +242,7 @@
 
         .bg-wrap {
             position: absolute;
+            top: -130px;
             width: 100%;
             height: 100%;
             background-size: cover;
@@ -288,7 +250,7 @@
         }
 
         .read {
-            .x-ceil(200px, fade(@x-green-dark, 80%));
+            .x-ceil(200px);
             .x-yahei;
             position: absolute;
             line-height: 100px;
@@ -297,7 +259,7 @@
             font-weight: bold;
             text-decoration: none;
             background: url("/public/images/blog/du.png?__sprite") no-repeat;
-            background-color: fade(@x-white-smoke, 60%);
+            background-color: fade(@x-white-smoke, 40%);
 
             &:hover {
                 background-color: @x-white-smoke;
@@ -313,7 +275,7 @@
             padding: 30px 20px;
             background: url("/public/images/layouts/texture.png?__sprite") repeat;
             background-color: fade(@x-black, 60%);
-            z-index: 1;
+            z-index: 0;
 
             h2 {
                 margin: 0;
@@ -391,6 +353,11 @@
         .blog-article-date {
             color: @x-gray-text;
         }
+    }
+
+    .blog-article-comment {
+        display: none;
+        margin-left: 270px;
     }
 
     .blog-article-suggest {

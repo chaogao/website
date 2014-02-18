@@ -5,14 +5,15 @@
 var fs = require("fs"),
     path = require("path"),
     Blog = require("../../models/blog"),
+    Tag = require("../../models/tag"),
     util = require("./util"),
     UPYun = require('../../plugin/upyun').UPYun,
     dateUtil = require("date-utils"),
     upyun, NEED_CHECK_ROUTES, YUNDOMAIN;
 
 
-upyun = new UPYun("website-doudougou", "doudougou", "4085903gougou");
-YUNDOMAIN = "http://website-doudougou.b0.upaiyun.com";
+upyun = new UPYun("website-node", "doudougou0406", "4085903gougou");
+YUNDOMAIN = "http://website-node.b0.upaiyun.com";
 
 NEED_CHECK_ROUTES = [
     {
@@ -90,7 +91,17 @@ exports.init = function (app) {
 
         req.body.blog.author = req.session.user.name;
 
+        if (!req.body.blog.tags) {
+            req.body.blog.tags = new Array();
+        } else {
+            req.body.blog.tags.forEach(function (tag) {
+                var tag = new Tag({name: tag});
+                tag.saveTag();
+            });
+        }
+
         blog = new Blog(req.body.blog);
+
         blog.saveBlog(function (error, blog) {
             var msg;
 
@@ -137,7 +148,16 @@ exports.init = function (app) {
         var blog = req.body.blog,
             id = blog.id;
 
-        delete blog.id
+        delete blog.id;
+
+        if (!blog.tags) {
+            blog.tags = new Array();
+        } else {
+            blog.tags.forEach(function (tag) {
+                var tag = new Tag({name: tag});
+                tag.saveTag();
+            });
+        }
 
         Blog.update({_id: id}, {$set: blog}).exec(function(error) {
             if (!error) {
@@ -198,6 +218,7 @@ exports.init = function (app) {
             if (!error) {
                 res.json({code: 0, url: YUNDOMAIN + "/" + basename});
             } else {
+                console.log(error, msg);
                 res.json({code: -1, msg: "server error"});
             }
         });

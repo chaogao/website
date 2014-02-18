@@ -22,6 +22,13 @@
             <span>副背景</span>
             <input name="blog[titleBg]">
         </p>
+        <p>
+            <span>标签</span>
+            <span class="tags-container">
+                <input type="hidden" name="blog[tags]" value=""/>
+            </span>
+            <a class="tag-add" href="javascript:void(0)">增加</a>
+        </p>
         
         <div class="editor-content">
             <span>正文</span>
@@ -36,5 +43,5 @@
     <div class="marked-content"></div>
 
 <% include ../../layouts/footer.tpl %>
-<script src="/public/javascripts/ace-builds-master/src-noconflict/ace.js"></script>
+<script src="/public/libs/ace/src/ace.js"></script>
 <script src="/public/javascripts/admin/index.js"></script>
