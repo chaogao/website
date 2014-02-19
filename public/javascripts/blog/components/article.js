@@ -130,8 +130,7 @@
                 });
             }).done(function () {
                 self.content.find(".blog-main").addClass("blog-main-show");
-                self.content.find(".blog-article-content").html(marked(self.json.blog.content));
-                self.content.find(".blog-article-comment").show();
+                self.content.find(".blog-article-content .blog-article-markdown").html(marked(self.json.blog.content));
                 self.analyseCategory();
                 self.initSuggestions();
                 self.titleAndFooter();
