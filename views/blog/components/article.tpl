@@ -1,6 +1,9 @@
 <div class="blog-article">
-    <div class="blog-article-category" data-spy="affix" data-offset-top="200"></div>
-    <div class="blog-article-content"></div>
+    <div class="blog-main">
+        <div class="blog-article-category" data-spy="affix" data-offset-top="200"></div>
+        <div class="blog-article-category-hide"></div>
+        <div class="blog-article-content"></div>
+    </div>
     <div class="blog-article-comment">
         <div id="uyan_frame"></div>
         <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1894956"></script>
@@ -9,9 +12,13 @@
     <div class="blog-article-cover" data-image="<%= blog.bg %>">
         <div class="bg-wrap"></div>
         <div class="infomation">
-            <h2><a href="javascript:void(0);"><%= blog.title %></a></h2>
-            <span class="description"><%= blog.description %></span>
+            <h2>
+                <a href="javascript:void(0);"><%= blog.title %></a>
+            </h2>
+            <span class="description">
+                <a class="read" style="display:none;" id="action-read" data-id="<%= blog.id %>" href="javascript:void(0);"></a>
+                <%= blog.description %>
+            </span>
         </div>
-        <a class="read" style="display:none;" id="action-read" data-id="<%= blog.id %>" href="javascript:void(0);"></a>
     </div>
 </div>

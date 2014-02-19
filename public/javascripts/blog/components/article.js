@@ -21,6 +21,14 @@
             }, 100);
         });
 
+        $(".blog-article-category").on("fixed", function () {
+            $(".blog-article-category-hide").show();
+        });
+
+        $(".blog-article-category").on("nofixed", function () {
+            $(".blog-article-category-hide").hide();
+        });
+
         self.deleagesEvents();
         self.getArticle(id);
         self.getBg();
@@ -74,8 +82,8 @@
 
             $(".blog-article-cover .bg-wrap").height(rHeight + 130);
 
-            $(".blog-article-cover .read").css("left", parseInt(Math.random() * (rWidth - $("#action-read").height())) + "px");
-            $(".blog-article-cover .read").css("top", parseInt(Math.abs(rHeight - $("#action-read").height() - 240)  * Math.random() + 240) + "px");
+            $(".blog-article-cover .infomation").css("top", rHeight * 0.1);
+            $(".blog-article-cover .infomation").css("height", rHeight * 0.65);
         },
         /**
          * 获取article详情
@@ -121,7 +129,8 @@
                     dfd.resolve();
                 });
             }).done(function () {
-                self.content.find(".blog-article-content").html(marked(self.json.blog.content)).fadeIn();
+                self.content.find(".blog-main").addClass("blog-main-show");
+                self.content.find(".blog-article-content").html(marked(self.json.blog.content));
                 self.content.find(".blog-article-comment").show();
                 self.analyseCategory();
                 self.initSuggestions();

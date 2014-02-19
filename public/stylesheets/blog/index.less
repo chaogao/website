@@ -15,6 +15,8 @@
 
     .blog-category-list {
         .x-unstyle;
+        height: 100px;
+        overflow: hidden;
 
         .blog-category-item {
             .x-ceil(100px, @x-blue, @x-white-smoke);
@@ -118,20 +120,44 @@
     }
 }
 
+@media screen and (max-width: 960px) {
+    .blog-article .blog-main .blog-article-category {
+        display: none;
+    }
+}
 
 /**
  * article 主体内容
  */
 .blog-article {
-    min-height: 400px;
+    .blog-main {
+        .x-transition(opacity, 0.5s);
+        display: none;
+        opacity: 0;
+        -webkit-box-orient:horizontal;
+
+        &.blog-main-show {
+            opacity: 1;
+            display: -webkit-box;
+        }
+    }
+
+    .blog-article-category-hide {
+        display: none;
+        width: 20%;
+        max-width: 240px;
+    }
 
     .blog-article-category {
-        float: left;
         position: relative;
-        width: 240px;
-        padding: 10px 10px 20px 0;
+        box-sizing: border-box;
+        display: block;
+        width: 20%;
+        max-width: 240px;
+        padding: 10px;
         font-size: 12px;
         line-height: 28px;
+        overflow: hidden;
 
         ul {
             .x-unstyle;
@@ -149,17 +175,6 @@
 
         .treeview-list-root {
             padding-left: 12px;
-        }
-
-        .treeview-list-root:after {
-            content: "";
-            position: absolute;
-            right: 0;
-            top: 30px;
-            width: 2px;
-            height: 300px;
-            border-right: 1px solid @x-green;
-            box-shadow: 2px 2px 2px @x-gray;
         }
 
         .treevie-leaf {
@@ -250,16 +265,12 @@
         }
 
         .read {
-            .x-ceil(200px);
-            .x-yahei;
-            position: absolute;
-            line-height: 100px;
-            color: @x-white;
-            font-size: 32px;
-            font-weight: bold;
-            text-decoration: none;
+            .x-ceil(100px);
+            float: right;
             background: url("/public/images/blog/du.png?__sprite") no-repeat;
             background-color: fade(@x-white-smoke, 40%);
+            background-size: cover;
+            margin: 0 0 10px 10px;
 
             &:hover {
                 background-color: @x-white-smoke;
@@ -269,18 +280,22 @@
         .infomation {
             .x-yahei();
             position: absolute;
-            left: 60px;
-            right: 180px;
-            top: 100px;
-            padding: 30px 20px;
+            box-sizing: border-box;
+            right: 10%;
+            left: 5%;
+            padding: 10px 20px;
             background: url("/public/images/layouts/texture.png?__sprite") repeat;
             background-color: fade(@x-black, 60%);
             z-index: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            -moz-overflow-scrolling: touch;
+            -o-overflow-scrolling: touch;
 
             h2 {
                 margin: 0;
                 padding: 0 0 20px 0;
-                font-size: 58px;
+                font-size: 8vw;
 
                 a {
                     .x-transition(color, .3s);
@@ -295,7 +310,6 @@
 
             .description {
                 float: right;
-                padding-left: 300px;
                 font-size: 16px;
                 color: @x-white-smoke;
             }
@@ -303,14 +317,16 @@
     }
 
     .blog-article-content {
-        display: none;
         position: relative;
-        margin-left: 270px;
-        margin-bottom: 20px;
+        display: block;
+        box-sizing: border-box;
         padding: 10px 20px;
+        margin-bottom: 20px;
         font-size: 14px;
         background-color: @x-white;
         box-shadow: 0px 0px 10px @x-gray;
+        overflow: hidden;
+        -webkit-box-flex: 1;
 
         ul ul,
         ol ul {
@@ -357,12 +373,10 @@
 
     .blog-article-comment {
         display: none;
-        margin-left: 270px;
     }
 
     .blog-article-suggest {
         display: none;
-        margin-left: 270px;
         margin-bottom: 10px;
         padding: 5px 10px;
         background-color: @x-gray-smoke;

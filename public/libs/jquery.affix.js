@@ -62,6 +62,14 @@
     this.unpin = affix == 'bottom' ? position.top - scrollTop : null
 
     this.$element.removeClass(reset).addClass('affix' + (affix ? '-' + affix : ''))
+
+    if (!affix) {
+      this.$element.trigger("fixed");
+    }
+
+    if (affix) {
+      this.$element.trigger("nofixed");
+    }
   }
 
 
