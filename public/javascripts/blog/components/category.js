@@ -3,15 +3,24 @@
  */
 
 (function() {
-    var Category, FixElement, Pagination;
+    var Category, Carousel, FixElement, Pagination;
 
     FixElement = require("jsmod/ui/fixElement");
     Pagination = require("jsmod/ui/pagination");
+    Carousel = require("jsmod/ui/carousel");
 
     Category = function () {
-        var self = this;
+        var self = this,
+            htmls;
 
-        self.content = $(".blog-category");
+        self.content = $(".blog-category").css("visibility", "visible");
+        htmls = $(".blog-category-item").remove();
+
+        self.ca = new Carousel(".blog-category", {
+            count: self.content.width() > 800 ? parseInt(self.content.width() / 200) : 3,
+            htmls: htmls
+        });
+
         self.delegatesEvents();
     };
 
@@ -53,45 +62,34 @@
                 self.timer && clearTimeout(self.timer);
                 self.timerIn && clearTimeout(self.timerIn);
 
+                if ($(target).hasClass("active")) {
+                    return;
+                }
 
-                self.timerIn = setTimeout(function() {
-                    if ($(target).hasClass("active")) {
-                        return;
-                    }
+                $(target).parents("ul").find(".blog-category-item").removeClass("active");
 
-                    $(target).parents("ul").find(".blog-category-item").removeClass("active");
+                $(target).addClass("active");
 
-                    $(target).addClass("active");
+                if (!listContainer.getDisplay()) {
+                    listContainer.show({fade: true});
+                }
+                listContainer.fixTo($(target), "bottom", {left: 150, top: 0});
+                listContainer.getElement().find(".blog-articles").html('<li class="loading">loading</li>');
 
-                    if (!listContainer.getDisplay()) {
-                        listContainer.show({fade: true});
-                    }
-                    listContainer.fixTo($(target), "bottom", {left: 150, top: 0});
-                    listContainer.getElement().find(".blog-articles").html('<li class="loading">loading</li>');
+                $.ajax({
+                    url: "/blogtag/" + (tagName || "")
+                }).done(function (json) {
+                    var total;
 
-                    $.ajax({
-                        url: "/blogtag/" + (tagName || "")
-                    }).done(function (json) {
-                        var total;
-
-                        total = json.content.length;
+                    total = json.content.length;
 
 
-                        listContainer.getElement().find(".blog-articles").html(new EJS({text: Category.Const.T_BLOG_ARTICLES}).render(json));
-                    });
+                    listContainer.getElement().find(".blog-articles").html(new EJS({text: Category.Const.T_BLOG_ARTICLES}).render(json));
                 });
             });
 
-            self.content.delegate(".action-close", "click", function() {
-                self.timer && clearTimeout(self.timer);
-                self.timerIn && clearTimeout(self.timerIn);
-
-                self.content.find(".blog-category-item").removeClass("active");
-                self.getListContainer().hide({fade: true});
-            });
-
             $(document).on("click", function (e) {
-                if ($(e.target).parents(".tip-blog-category").length == 0 && $(e.target).parents(".blog-category-list").length == 0) {
+                if ($(e.target).parents(".tip-blog-category").length == 0 && $(e.target).parents(".blog-category").length == 0) {
                     self.timer && clearTimeout(self.timer);
                     self.timerIn && clearTimeout(self.timerIn);
 
@@ -126,6 +124,14 @@
             });
 
             self.listContainer.getElement().find(".tip-category-list").height($(window).height() - 250);
+
+            self.listContainer.getElement().delegate(".action-close", "click", function() {
+                self.timer && clearTimeout(self.timer);
+                self.timerIn && clearTimeout(self.timerIn);
+
+                self.content.find(".blog-category-item").removeClass("active");
+                self.getListContainer().hide({fade: true});
+            });
 
             new Scrollbar(self.listContainer.getElement().find(".tip-category-list"));
 

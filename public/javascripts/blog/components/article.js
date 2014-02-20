@@ -80,7 +80,7 @@
 
             $(".blog-article-cover").height(rHeight);
 
-            $(".blog-article-cover .bg-wrap").height(rHeight + 130);
+            $(".blog-article-cover .bg-wrap").height(rHeight);
 
             $(".blog-article-cover .infomation").css("top", rHeight * 0.1);
             $(".blog-article-cover .infomation").css("height", rHeight * 0.65);

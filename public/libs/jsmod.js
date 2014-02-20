@@ -977,7 +977,9 @@ define("jsmod/ui/fixElement", function(require, exports, module) {
 
             targetType = targetType || self.option.targetType;
 
-            element.css("position", "absolute").detach().insertAfter($(target).parent());
+            if (element.parent("body").length == 0) {
+                element.css("position", "absolute").detach().appendTo(document.body);
+            }
 
             bounds = self.getBounds(target);
             rect = self.getRect(element);
