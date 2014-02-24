@@ -827,7 +827,8 @@ define("jsmod/ui/fixElement", function(require, exports, module) {
         targetType: "top",
         zIndex: 1000,
         fixed: false,
-        preventResize: false
+        preventResize: false,
+        appendInBody: false
     };
 
     /**
@@ -836,16 +837,17 @@ define("jsmod/ui/fixElement", function(require, exports, module) {
      * 
      * @constructor
      * @alias module:jsmod/ui/fixElement
-     * @param {(string|dom|selector)} element                      需要定位的元素，可以是 html, dom, 选择器
-     * @param {object}                option                       配置参数
-     * @param {(dom|selector)}        [option.target]              定位到这个元素附近 (取选择器中获取的第一个元素作为定位元素)
-     * @param {string}                [option.targetType=top]      定位方式, 可选值: center, top, bottom, right, left
-     * @param {Coords}                [option.offset]              定位时的偏移
-     * @param {Coords}                [option.position]            没有 target 参数时, 采取绝对定位方式时传入的坐标
-     * @param {bool}                  [option.fixed=false]         是否使用 fixed 定位, 仅当采用坐标定位时可用, ie6 会自动加入 hack 支持 fix 定位
-     * @param {int}                   [option.zIndex=1000]         元素的 z-index
-     * @param {bool}                  [option.preventShow=false]   是否阻止初始化时显示元素
-     * @param {bool}                  [option.preventResize=false] 是否阻止resize时重定位元素
+     * @param {(string|dom|selector)} element                        需要定位的元素，可以是 html, dom, 选择器
+     * @param {object}                option                         配置参数
+     * @param {(dom|selector)}        [option.target]                定位到这个元素附近 (取选择器中获取的第一个元素作为定位元素)
+     * @param {string}                [option.targetType]            用 "," 分割可传入一至三个值，每个值都可选 top, right, bottom, left, center
+     * @param {Coords}                [option.offset]                定位时的偏移
+     * @param {Coords}                [option.position]              没有 target 参数时, 采取绝对定位方式时传入的坐标
+     * @param {bool}                  [option.fixed=false]           是否使用 fixed 定位, 仅当采用坐标定位时可用, ie6 会自动加入 hack 支持 fix 定位
+     * @param {int}                   [option.zIndex=1000]           元素的 z-index
+     * @param {bool}                  [option.preventShow=false]     是否阻止初始化时显示元素
+     * @param {bool}                  [option.preventResize=false]   是否阻止resize时重定位元素
+     * @param {bool}                  [option.appendInBody=false]    如果 target 的父元素设置 overflow:hidden 且 relative, absolute 定位时，元素会被隐藏，设置此值为 true 元素将成为 body 的子元素
      * @example
      * var FixElement = require("jsmod/ui/fixElement"), fixEl;
      *
@@ -954,7 +956,7 @@ define("jsmod/ui/fixElement", function(require, exports, module) {
          * 定位到指定的元素周围，定位成功后会更改原有配置
          * @public
          * @param {(string|dom)} target           定位到这个元素附近
-         * @param {string}       [targetType=top] 定位方式, 可选值: center, top, bottom, right, left, auto 设置 auto 时会根据当前视图自动选择定位方式
+         * @param {string}       [targetType]     用 "," 分割可传入一至三个值，每个值都可选 top, right, bottom, left, center
          * @param {Coords}       [offset]         定位时的偏移
          * @example
          * instance.fixTo("#to-fix-element", "bottom", {left: 5, top: 5});
@@ -962,7 +964,79 @@ define("jsmod/ui/fixElement", function(require, exports, module) {
         fixTo: function (target, targetType, offset) {
             var self = this,
                 element = self._element,
-                bounds, rect, position;
+                bounds, rect, position, targetTypeArr, horizontalFun, verticalFun;
+
+            /** 
+             * 第一个对齐参数为 top bottom 
+             * @inner
+             * @param {object} pos     位置
+             * @param {string} type    第二个定位参数
+             * @param {string} [typeT] 第三个定位参数
+             */
+            horizontalFun = function (pos, type, typeT) {
+                if (type === undefined || type == "left" || type == "right" || type == "center") {
+                    if (type == "left") {
+                        pos.left -= bounds.width / 2;
+                    }
+
+                    if (type == "right") {
+                        pos.left += bounds.width / 2;
+                    } 
+                } else {
+                    throw new RangeError("second targetType error");
+                }
+
+                // 第三个定位参数
+                if (typeT === undefined || typeT == "left" || typeT == "right" || typeT == "center") {
+                    if (typeT == "left") {
+                        pos.left -= rect.width / 2;
+                    }
+
+                    if (typeT == "right") {
+                        pos.left += rect.width / 2;
+                    }
+                } else {
+                    throw new RangeError("third targetType error");
+                }
+
+                return pos;
+            }
+
+            /** 
+             * 第一个对齐参数为 left、right 
+             * @inner
+             * @param {object} pos     位置
+             * @param {string} type    第二个定位参数
+             * @param {string} [typeT] 第三个定位参数
+             */
+            verticalFun = function (pos, type, typeT) {
+                if (type === undefined || type == "bottom" || type == "top" || type == "center") {
+                    if (type == "bottom") {
+                        pos.top += bounds.height / 2;
+                    }
+
+                    if (type == "top") {
+                        pos.top -= bounds.height / 2;
+                    } 
+                } else {
+                    throw new RangeError("second targetType error");
+                }
+
+                // 第三个定位参数
+                if (typeT === undefined || typeT == "bottom" || typeT == "top" || typeT == "center") {
+                    if (typeT == "bottom") {
+                        pos.top += rect.height / 2;
+                    }
+
+                    if (typeT == "top") {
+                        pos.top -= rect.height / 2;
+                    }
+                } else {
+                    throw new RangeError("third targetType error");
+                }
+
+                return pos;
+            }
 
             $.extend(self.option, {
                 target: target,
@@ -977,25 +1051,37 @@ define("jsmod/ui/fixElement", function(require, exports, module) {
 
             targetType = targetType || self.option.targetType;
 
-            if (element.parent("body").length == 0) {
+            // 将字符串转化为数组
+            targetTypeArr = targetType.split(",");
+            targetTypeArr = $.map(targetTypeArr, function (value) {
+                return $.trim(value);
+            });
+
+            if (self.option.appendInBody) {
                 element.css("position", "absolute").detach().appendTo(document.body);
+            } else {
+                element.css("position", "absolute").detach().insertAfter($(target).parent());
             }
 
             bounds = self.getBounds(target);
             rect = self.getRect(element);
 
-            switch (targetType) {
+            switch (targetTypeArr[0]) {
                 case "top": 
                     position = {top: bounds.top - rect.height, left: bounds.left + bounds.width /2 - rect.width / 2}
+                    horizontalFun(position, targetTypeArr[1], targetTypeArr[2]);
                     break;
                 case "right":
                     position = {top: bounds.top + bounds.height / 2 - rect.height / 2, left: bounds.left + bounds.width}
+                    verticalFun(position, targetTypeArr[1], targetTypeArr[2]);
                     break;
                 case "bottom":
                     position = {top: bounds.top + bounds.height, left: bounds.left + bounds.width /2 - rect.width / 2}
+                    horizontalFun(position, targetTypeArr[1], targetTypeArr[2]);
                     break;
                 case "left":
                     position = {top: bounds.top + bounds.height / 2 - rect.height / 2, left: bounds.left - rect.width}
+                    verticalFun(position, targetTypeArr[1], targetTypeArr[2]);
                     break;
                 case "center":
                     position = {top: bounds.top + bounds.height / 2 - rect.height / 2, left: bounds.left + bounds.width /2 - rect.width / 2}
@@ -1863,7 +1949,7 @@ define("jsmod/ui/fixElement/tip", function(require, exports, module) {
      * @param {string}       [option.className]                   自定义的 className 
      * @param {string}       [option.title]                       title 部分的 html, 如果不传则获取 target 上的 data-title 属性, 优先选择 data-title
      * @param {string}       [option.content]                     content 部分的 html, 如果不传则获取 target 上的 data-content 属性, 优先选择 data-content
-     * @param {string}       [option.targetType=top]              tip 的位置, 如果不传则获取 target 上的 data-target-type 属性，优先选择 data-target-type; 可选值: center, top, bottom, right, left
+     * @param {string}       [option.targetType]                  用 "," 分割可传入一至三个值，每个值都可选 top, right, bottom, left, center
      * @param {Coords}       [option.offset]                      tip 的偏移, 如果不传则获取 target 上的 data-offset 属性, 优先选择 data-offset
      * @param {string}       [option.trigger=hover]               触发 tip 的事件, 可选值: hover, click, manual (manual 不为 tip 对象注册任何事状态完全由外部控制)
      * @param {Delay}        [option.delay={show:300, hide: 300}] 当选择 hover 可用, 设置延迟多少毫秒显示, 消失; 设置为 0 时取消 delay

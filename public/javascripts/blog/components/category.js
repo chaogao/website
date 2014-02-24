@@ -16,8 +16,10 @@
         self.content = $(".blog-category").css("visibility", "visible");
         htmls = $(".blog-category-item").remove();
 
+        self.count = self.content.width() > 800 ? 5 : 3;
+
         self.ca = new Carousel(".blog-category", {
-            count: self.content.width() > 800 ? parseInt(self.content.width() / 200) : 3,
+            count: self.count, 
             htmls: htmls
         });
 
@@ -53,11 +55,11 @@
         delegatesEvents: function () {
             var self = this;
 
-            self.content.delegate(".blog-category-item", "click", function () {
+            self.content.delegate(".blog-category-item:not(.blog-category-item-none)", "click", function () {
                 var listContainer = self.getListContainer(),
                     target = this,
                     tagName = $(this).data("tag"),
-                    dfd;
+                    dfd, oWidth, overWidth;
 
                 self.timer && clearTimeout(self.timer);
                 self.timerIn && clearTimeout(self.timerIn);
@@ -71,10 +73,19 @@
                 $(target).addClass("active");
 
                 if (!listContainer.getDisplay()) {
-                    listContainer.show({fade: true});
+                    listContainer.show();
                 }
-                listContainer.fixTo($(target), "bottom", {left: 150, top: 0});
+
                 listContainer.getElement().find(".blog-articles").html('<li class="loading">loading</li>');
+                oWidth = listContainer.getElement().outerWidth();
+                overWidth = $(window).width() - (oWidth + $(target).offset().left);
+
+                if (overWidth < 20) {
+                    listContainer.fixTo($(target), "bottom, left, right", {left: overWidth - (Math.random() * 40 + 20)});
+                } else {
+                    listContainer.fixTo($(target), "bottom, left, right");
+                }
+ 
 
                 $.ajax({
                     url: "/blogtag/" + (tagName || "")
@@ -103,27 +114,47 @@
                     clearTimeout(self.timer);
                 }
             });
+
+            $(".blog-category-content .arrow-right").click(function () {
+                var ca = self.ca,
+                    i = ca.getCurIndex();
+
+                ca.cur(i + self.count);
+            });
+
+            $(".blog-category-content .arrow-left").click(function () {
+                var ca = self.ca,
+                    i = ca.getCurIndex();
+
+                ca.cur(i - self.count);
+            });
         },
         /**
          * 获取存放list的元素
          */
         getListContainer: function () {
             var self = this,
-                Scrollbar = require("jsmod/ui/scrollbar");
+                Scrollbar = require("jsmod/ui/scrollbar"),
+                width;
 
             if (self.listContainer) {
                 return self.listContainer;
             }
+
+            width = $(window).width() * 0.7;
 
             self.listContainer = new FixElement('<div class="tip-blog-category">' +
                     '<a href="javascript:void(0)" class="glyphicon glyphicon-remove-circle action-close"></a>' +
                     '<div class="tip-category-list"><ul class="blog-articles"></ul></div>' + 
                 '</div>', {
                 preventShow: true,
-                targetType: "bottom"
+                appendInBody: true,
+                targetType: "bottom, left, right"
             });
 
-            self.listContainer.getElement().find(".tip-category-list").height($(window).height() - 250);
+            self.listContainer.getElement().width(width);
+
+            self.listContainer.getElement().find(".tip-category-list").height($(".blog-article-cover").height() * 0.9);
 
             self.listContainer.getElement().delegate(".action-close", "click", function() {
                 self.timer && clearTimeout(self.timer);
@@ -132,8 +163,6 @@
                 self.content.find(".blog-category-item").removeClass("active");
                 self.getListContainer().hide({fade: true});
             });
-
-            new Scrollbar(self.listContainer.getElement().find(".tip-category-list"));
 
             return self.listContainer;
         }

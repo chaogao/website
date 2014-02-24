@@ -1,14 +1,45 @@
 @import "/public/stylesheets/mixins/common_mixin.less";
 
 /** 分类部分的样式 */
+.blog-category-content {
+    margin-bottom: 10px;
+
+    .arrow-left,
+    .arrow-right {
+        box-sizing: border-box;
+        width: 10%;
+        max-width: 50px;
+        padding: 0 5px;
+        text-align: center;
+        cursor: pointer;
+
+        a {
+            height: 10vh;
+            min-height: 50px;
+            font-size: 20px;
+            line-height: 50px;
+            text-decoration: none;
+        }
+
+        &:hover  {
+            background-color: @x-gray;
+        }
+    }
+
+    .arrow-left {
+        float: left;
+    }
+
+    .arrow-right {
+        float: right;
+    }
+}
+
 .blog-category {
-    position: relative;
     height: 10vh;
     min-height: 50px;
-    margin-bottom: 10px;
-    background-color: rgba(246, 249, 255, 0.5);;
+    width: auto;
     z-index: 1;
-    overflow: hidden;
     visibility: hidden;
 
     .mod-carousel {
@@ -54,6 +85,10 @@
         &:hover {
             background-color: darken(@x-blue, 10%);
         }
+
+        &.blog-category-item-none {
+            background-color: @x-gray-dark;
+        }
     }
 }
 
@@ -76,6 +111,10 @@
 
     .tip-category-list {
         height: 200px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        -moz-overflow-scrolling: touch;
+        -o-overflow-scrolling: touch;
     }
 
     .blog-articles {

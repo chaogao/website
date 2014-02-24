@@ -169,7 +169,7 @@
          */
         analyseCategory: function () {
             var self = this,
-                article = self.content.find(".blog-article-content"),
+                article = self.content.find(".blog-article-content .blog-article-markdown"),
                 count = 8, i = 1, datas = [], treeDatas = [], titles, id = 0,
                 reg = /<span class="tree-menu">(.*)<\/span>/;
 
