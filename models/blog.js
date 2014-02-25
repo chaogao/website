@@ -3,6 +3,7 @@
  */
 
 var mongoose = require("mongoose"),
+    async = require('async'),
     schema, Blog;
 
 schema = mongoose.Schema({
@@ -10,12 +11,14 @@ schema = mongoose.Schema({
     author: String,
     description: String,
     date: Date,
+    dateStr: String,
     tags: Array,
     content: String,
     bg: {type: String, default: ""},
     titleBg: {type: String, default: ""},
     top: {type: Boolean, default: false},
-    draft: {type: Boolean, default: true}
+    draft: {type: Boolean, default: true},
+    series: {type: String, default: ""}
 });
 
 /**
@@ -23,6 +26,8 @@ schema = mongoose.Schema({
  */
 schema.methods.saveBlog = function (cb) {
     this.date = new Date();
+    this.dateStr = this.date.toFormat("YYYY-MM-DD HH24:MI:SS");
+
     if (this.title && this.author && this.content) {
         this.save(cb);
     } else {
@@ -70,30 +75,40 @@ schema.statics.viewBlog = function (id, cb) {
 
     datas = {};
 
-    self.findById(id).exec(function (error, blog) {
-        datas.blog = blog;
+    async.waterfall([
+        function (callback) {
+            self.findById(id).exec(function (error, blog) {
+                datas.blog = blog;
 
-        if (blog) {
+                callback(error, blog);
+            });
+        },
+        function (blog, callback) {
             self.find({_id: {$lt: blog.id}}).select(Blog.Const.MIN_FILEDS).sort({_id: -1}).limit(1).exec(function(error, blogs) {
-                console.log(blogs);
-
                 if (blogs.length > 0) {
                     datas.pre = blogs[0];
                 }
 
-                self.find({_id: {$gt: blog.id}}).select(Blog.Const.MIN_FILEDS).sort({_id: 1}).limit(1).exec(function (error, blogs) {
-                    console.log(blogs);
-
-                    if (blogs.length > 0) {
-                        datas.next = blogs[0];
-                    }
-
-                    cb(error, datas);
-                });
+                callback(error, blog);
             });
-        } else {
-            cb(error, datas);
+        },
+        function (blog, callback) {
+            self.find({_id: {$gt: blog.id}}).select(Blog.Const.MIN_FILEDS).sort({_id: 1}).limit(1).exec(function (error, blogs) {
+                if (blogs.length > 0) {
+                    datas.next = blogs[0];
+                }
+
+                callback(error, blog);
+            });
+        },
+        function (blog, callback) {
+            Blog.findBySeries(blog.series, function (error, blogs) {
+                datas.seriesBlogs = blogs;
+                callback(error);
+            });
         }
+    ], function (error) {
+        error ? cb(error) : cb(error, datas);
     });
 }
 
@@ -110,7 +125,21 @@ schema.statics.findByTag = function (name, cb) {
         filter = {tags: name};
     }
 
-    self.find(filter).select(Blog.Const.MIN_FILEDS).exec(function () {
+    self.find(filter).select(Blog.Const.MIN_FILEDS).sort({date: -1}).exec(function () {
+        cb && cb.apply(this, arguments);
+    });
+}
+
+/**
+ * 通过 series 获取日志
+ */
+schema.statics.findBySeries = function (name, cb) {
+    var self = this,
+        filter;
+        
+    filter = {series: name};
+
+    self.find(filter).select(Blog.Const.MIN_FILEDS).sort({date: 1}).exec(function () {
         cb && cb.apply(this, arguments);
     });
 }
@@ -135,8 +164,8 @@ schema.statics.setTop = function (id, cb) {
 Blog = mongoose.model("Blog", schema);
 
 Blog.Const = {};
-Blog.Const.MIN_FILEDS = "title tags date description top draft";
-Blog.Const.MIDDLE_FILEDS = "title author description date tags bg titleBg top draft";
-Blog.Const.FULL_FILEDS = "title author description date tags bg titleBg content top draft";
+Blog.Const.MIN_FILEDS = "title series tags date description top draft";
+Blog.Const.MIDDLE_FILEDS = "title series author description date tags bg titleBg top draft";
+Blog.Const.FULL_FILEDS = "title series author description date tags bg titleBg content top draft";
 
 module.exports = Blog;

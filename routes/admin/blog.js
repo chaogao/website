@@ -6,6 +6,7 @@ var fs = require("fs"),
     path = require("path"),
     Blog = require("../../models/blog"),
     Tag = require("../../models/tag"),
+    Series = require("../../models/series"),
     util = require("./util"),
     UPYun = require('../../plugin/upyun').UPYun,
     dateUtil = require("date-utils"),
@@ -60,10 +61,8 @@ exports.init = function (app) {
         var blogs;
 
         Blog.adminBlogs(Blog.Const.MIN_FILEDS, function(error, blogs) {
-            debugger;
 
             blogs.forEach(function (blog) {
-                debugger;
                 blog.dateStr = blog.date.toFormat("YYYY-MM-DD HH24:MI:SS");
             });
 
@@ -146,7 +145,8 @@ exports.init = function (app) {
      */
     app.post("/admin/blogupdate", function (req, res) {
         var blog = req.body.blog,
-            id = blog.id;
+            id = blog.id,
+            sr;
 
         delete blog.id;
 
@@ -159,12 +159,18 @@ exports.init = function (app) {
             });
         }
 
+        if (!blog.series) {
+            blog.series = "";
+        } else {
+            sr = new Series({name: blog.series});
+            sr.saveSeries();
+        }
+
         Blog.update({_id: id}, {$set: blog}).exec(function(error) {
             if (!error) {
                 res.redirect("/admin/blog");
             }
         });
-
     });
 
     /**

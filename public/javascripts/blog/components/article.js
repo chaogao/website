@@ -2,14 +2,16 @@
  * 一片文案的处理逻辑
  */
 (function() {
-    var Article, TreeView;
+    var Article, TreeView, Tip;
 
     TreeView = require("jsmod/ui/treeView");
+    Tip = require("jsmod/ui/fixElement/tip");
 
     Article = function (id) {
         var self = this;
 
         self.content = $(".blog-article");
+        self.seriesBlogs = window.__data.seriesBlogs;
 
         $(window).resize(function () {
             if (self.timer) {
@@ -31,11 +33,26 @@
 
         self.deleagesEvents();
         self.getArticle(id);
+        self.initTip();
         self.getBg();
     };
 
     Article.Const = {};
-    Article.Const.T_SUGGESTION = '<h3>相关推荐</h3>' +
+    Article.Const.T_SUGGESTION = '' +
+        '[% if (seriesBlogs.length > 0) { %]' +
+            '<div class="series-content">' +
+                '<h3>同一系列的</h3>' +
+                '<ul>' +
+                    '[% $.each(seriesBlogs, function () { %]' +
+                        '<li data-id="[%= this._id %]">' +
+                            '<a href="/blog/[%=this._id%]">[%=this.series%] —— [%=this.title%]</a>' +
+                            '<p>[%=this.description%]</p>' +
+                        '</il>' +
+                    '[% }); %]' +
+                '</ul>' +
+            '</div>' +
+        '[% } %]' +
+        '<h3>相关推荐</h3>' +
         '[% if (pre) { %]' +
             '<dl class="pre" data-id="[%= pre._id %]">' +
                 '<dt><a href="/blog/[%=pre._id%]">上一篇：[%=pre.title%]</a></dt>' +
@@ -48,8 +65,34 @@
                 '<dd>[%=next.description%]</dd>' +
             '</dl>' +
         '[% } %]';
+    Article.Const.T_SERIES_TIP = '' +
+        '<ul>' +
+            '[% $.each(seriesBlogs, function () { %]' +
+                '<li data-id="[%= this._id %]">' +
+                    '<a href="/blog/[%=this._id%]">[%=this.series%] —— [%=this.title%]</a>' +
+                    '<p>[%=this.description%]</p>' +
+                '</il>' +
+            '[% }); %]' +
+        '</ul>';
 
     $.extend(Article.prototype, {
+        /**
+         * 初始化 tip
+         */
+        initTip: function () {
+            var self = this;
+
+            if ($("#series-tip-target").length) {
+                new Tip({
+                    targets: "#series-tip-target",
+                    targetType: "bottom, right, left",
+                    className: "tip-series",
+                    content: new EJS({text: Article.Const.T_SERIES_TIP}).render({
+                        seriesBlogs: self.seriesBlogs
+                    })
+                });
+            }
+        },
         /**
          * 获取背景图片
          */
@@ -150,7 +193,8 @@
 
             html = new EJS({text: Article.Const.T_SUGGESTION}).render({
                 pre: self.json.pre,
-                next: self.json.next
+                next: self.json.next,
+                seriesBlogs: self.json.seriesBlogs
             });
 
             self.content.find(".blog-article-suggest").html(html).show();
@@ -162,7 +206,15 @@
             var self = this,
                 blog = self.json.blog;
 
-            self.content.find(".blog-article-content").prepend('<h1 style="background: url(' + blog.titleBg + ') no-repeat top right" class="blog-article-title">' + blog.title + '</h2>' + '<p class="blog-article-date">' + blog.author + ' post at: ' + blog.date + '</p>');
+            self.content.find(".blog-article-content").prepend([
+                '<h2 style="background: url(' + blog.titleBg + ') no-repeat top right" class="blog-article-title">',
+                    blog.title,
+                '</h2>',
+                blog.series ? '<h4 class="blog-article-series">' + blog.series + '</h4>' : "",
+                '<p class="blog-article-date">',
+                    '<b>' + blog.author + '</b>' + ' post at: ' + blog.dateStr,
+                '</p>'
+            ].join(""));
         },
         /**
          * 分析目录

@@ -23,6 +23,10 @@
             <input name="blog[titleBg]" value="<%= blog.titleBg %>">
         </p>
         <p>
+            <span>系列</span>
+            <input name="blog[series]" value="<%= blog.series %>">
+        </p>
+        <p>
             <span>标签</span>
             <span class="tags-container">
                 <input type="hidden" name="blog[tags]" value=""/>

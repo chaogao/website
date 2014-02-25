@@ -31,9 +31,10 @@
         '[% $.each(content, function () { %]' +
             '<li class="clearfix">' +
                 '<div class="content">' +
-                    '<a href="/blog/[%= this._id %]">[%= this.title %]</a>' + 
+                    '<a href="/blog/[%= this._id %]">[%= this.series ? this.series + " —— " + this.title : this.title %]</a>' + 
+                    '[%= this.series ? "<p class=\'series\'>所属系列：" + this.series + "</p>" : "" %]' + 
                     '<p class="date">' +
-                        '[%= this.date %]' +
+                        '[%= this.dateStr %]' +
                     '</p>' +
                     '<div class="description">' +
                         '[% if (this.titleBg) { %]' +

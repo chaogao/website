@@ -92,8 +92,21 @@
     }
 }
 
+.tip-series {
+    width: 20vw;
+    padding: 10px;
+    border: 1px solid @x-gray;
+    background-color: rgba(241, 240, 250, 0.9);
+    box-shadow: 0px 0px 2px @x-black-dark;
+
+    ul {
+        .x-unstyle();
+    }
+}
+
 .tip-blog-category {
     .x-transition(left, .3s);
+    box-sizing: border-box;
     width: 500px;
     padding: 20px;
     background-color: rgba(241, 240, 250, 0.9);
@@ -159,7 +172,8 @@
             z-index: 1;
         }
 
-        .date {
+        .date,
+        .series {
             margin: 5px 0;
         }
     }
@@ -356,6 +370,19 @@
                 float: right;
                 font-size: 16px;
                 color: @x-white-smoke;
+            }
+        }
+
+        .series {
+            float: left;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: rgba(241, 240, 250, 0.9);
+
+            b {
+                cursor: pointer;
+                color: @x-blue-link;
+                font-weight: normal;
             }
         }
     }
