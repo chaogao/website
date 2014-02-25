@@ -13,26 +13,54 @@ exports.init = function (app) {
 }
 
 routes.index = function (req, res) {
-    var blog, promise;
+    var blog, data = {};
 
     if (req.path == "/") {
         res.redirect("/blog");
     } else {
-        promise = Tag.find().exec();
+        async.waterfall([
+            function (callback) {
+                Blog.topBlog(Blog.Const.MIDDLE_FILEDS, function (error, blog) {
+                    if (!blog) {
+                        console.log("no blog");
+                        error = {errorNo: 1, errorMsg: "no blog"};
+                    }
 
-        promise.then(function (tags) {
-            Blog.topBlog(Blog.Const.MIDDLE_FILEDS, function (error, blog) {
-
-                if (!error && blog) {
-                    res.render('blog/index.tpl', {
-                        title: blog.title,
-                        blog: blog,
-                        tags: tags
+                    // 设置 blog 数据
+                    data.blog = blog;
+                    data.title = blog.title;
+                    callback(error, blog);
+                });
+            },
+            function (blog, callback) {
+                // 设置 tag 数据
+                Tag.find().exec(function (error, tags) {
+                    data.tags = tags;
+                    callback(error, blog);
+                });
+            },
+            function (blog, callback) {
+                // 设置系列数据
+                if (blog.series) {
+                    Blog.findBySeries(blog.series, function (error, blogs) {
+                        data.seriesBlogs = blogs;
+                        callback(error);
                     });
                 } else {
-                    res.status(404).render("404.tpl");
+                    data.seriesBlogs = [];
+                    callback();
                 }
-            });
+            }
+        ], function (error) {
+            if (error) {
+                res.status(404).render("404.tpl");
+            } else {
+               if (req.query.json) {
+                    res.json(data);
+                } else {
+                    res.render('blog/index.tpl', data);
+                }
+            }
         });
     }
 };
