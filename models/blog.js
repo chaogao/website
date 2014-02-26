@@ -164,7 +164,7 @@ schema.statics.setTop = function (id, cb) {
 Blog = mongoose.model("Blog", schema);
 
 Blog.Const = {};
-Blog.Const.MIN_FILEDS = "title series tags date description top draft";
+Blog.Const.MIN_FILEDS = "title series bg tags date description top draft";
 Blog.Const.MIDDLE_FILEDS = "title series author description date tags bg titleBg top draft";
 Blog.Const.FULL_FILEDS = "title series author description date tags bg titleBg content top draft";
 

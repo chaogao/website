@@ -13,13 +13,29 @@ exports.init = function (app) {
 }
 
 routes.index = function (req, res) {
-    Blog.topBlog(Blog.Const.MIDDLE_FILEDS, function (error, blog) {
-        if (!blog) {
-            console.log("no blog");
-            error = {errorNo: 1, errorMsg: "no blog"};
-        }
+    var id = req.params.id,
+        data = {
+            title: "ddg的前端世界"
+        };
 
-        res.redirect("/blog/" + blog.get("_id"));
+    async.waterfall([
+        function (callback) {
+            // 设置 tag 数据
+            Tag.find().exec(function (error, tags) {
+                data.tags = tags;
+                callback(error);
+            });
+        }
+    ], function (error) {
+        if (error) {
+            res.status(404).render("404.tpl");
+        } else {
+           if (req.query.json) {
+                res.json(data);
+            } else {
+                res.render('blog/index.tpl', data);
+            }
+        }
     });
 };
 
@@ -67,7 +83,7 @@ routes.blog = function (req, res) {
            if (req.query.json) {
                 res.json(data);
             } else {
-                res.render('blog/index.tpl', data);
+                res.render('blog/blog.tpl', data);
             }
         }
     });

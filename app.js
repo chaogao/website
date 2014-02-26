@@ -56,11 +56,11 @@ if ('development' == app.get('env')) {
     app.use("/public", express.static(__dirname + '/public'));
 }
 app.use(app.router);
-app.use(function (err, req, res, next) {
-    var meta = '[' + new Date() + '] ' + req.url + '\n';
-    errorLog.write(meta + err.stack + '\n');
-    next();
-});
+// app.use(function (err, req, res, next) {
+//     var meta = '[' + new Date() + '] ' + req.url + '\n';
+//     errorLog.write(meta + err.stack + '\n');
+//     next();
+// });
 
 blog.init(app);
 admin.init(app);
