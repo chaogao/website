@@ -63,12 +63,15 @@ EJS.config( {cache: true, type: '[', ext: '.ejs' } );
             $(self.tb).on("tab", function (e) {
                 var tagName = $(e.tab).data("tag");
 
+                $(".blog-index-list").addClass("loading").html("");
+
                 aj && aj.abort();
 
                 aj = $.ajax({
                     url: "/blogtag/" + (tagName || "")
                 }).done(function (json) {
-                    $(".blog-index-list").html(new EJS({text: T_BLOG_LIST}).render(json));
+                    $(".blog-index-list").removeClass("loading").html(new EJS({text: T_BLOG_LIST}).render(json));
+                    $(".blog-index-list .content").css("opacity", 1);
                     aj = null;
                 });
             });

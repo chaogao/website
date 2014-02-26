@@ -46,7 +46,12 @@
     overflow-y: auto;
     box-shadow: 1px 0px 2px @x-gray;
 
+    &.loading {
+        background: #ffffff url("/public/images/blog/Teddy_Bear_Loading.gif") no-repeat center center;
+    }
+
     .content {
+        .x-transition(opacity, 1s);
         position: relative;
         height: 280px;
         padding: 20px;
@@ -56,11 +61,14 @@
         background-color: #3D3D3D;
         border-radius: 10px;
         box-shadow: 0px 0px 4px @x-gray;
+        opacity: 0;
 
         .content-info {
             padding: 20px 10px;
+            height: 240px;
             background: url("/public/images/layouts/texture.png?__sprite") repeat;
             background-color: fade(@x-white, 80%);
+            overflow: hidden;
 
             p {
                 margin: 0;
