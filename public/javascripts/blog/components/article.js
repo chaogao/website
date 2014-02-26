@@ -41,12 +41,12 @@
     Article.Const.T_SUGGESTION = '' +
         '[% if (seriesBlogs.length > 0) { %]' +
             '<div class="series-content">' +
-                '<h3>同一系列的</h3>' +
+                '<h3><b>[%=series%]系列</b>的所有文章</h3>' +
                 '<ul>' +
                     '[% $.each(seriesBlogs, function () { %]' +
                         '<li data-id="[%= this._id %]">' +
-                            '<a href="/blog/[%=this._id%]">[%=this.series%] —— [%=this.title%]</a>' +
-                            '<p>[%=this.description%]</p>' +
+                            '<a href="/blog/[%=this._id%]">[%=this.title%]</a>' +
+                            '<p class="desc">[%=this.description%]</p>' +
                         '</il>' +
                     '[% }); %]' +
                 '</ul>' +
@@ -69,8 +69,8 @@
         '<ul>' +
             '[% $.each(seriesBlogs, function () { %]' +
                 '<li data-id="[%= this._id %]">' +
-                    '<a href="/blog/[%=this._id%]">[%=this.series%] —— [%=this.title%]</a>' +
-                    '<p>[%=this.description%]</p>' +
+                    '<a href="/blog/[%=this._id%]">[%=this.title%]</a>' +
+                    '<p class="desc">[%=this.description%]</p>' +
                 '</il>' +
             '[% }); %]' +
         '</ul>';
@@ -82,10 +82,10 @@
         initTip: function () {
             var self = this;
 
-            if ($("#series-tip-target").length) {
+            if ($(".series").length) {
                 new Tip({
                     targets: "#series-tip-target",
-                    targetType: "bottom, right, left",
+                    targetType: "right, top, bottom",
                     className: "tip-series",
                     content: new EJS({text: Article.Const.T_SERIES_TIP}).render({
                         seriesBlogs: self.seriesBlogs
@@ -125,8 +125,9 @@
 
             $(".blog-article-cover .bg-wrap").height(rHeight);
 
-            $(".blog-article-cover .infomation").css("top", rHeight * 0.1);
-            $(".blog-article-cover .infomation").css("height", rHeight * 0.65);
+            $(".blog-article-cover .infomation").show()
+                .css("top", rHeight * 0.1)
+                .css("height", rHeight * 0.65);
         },
         /**
          * 获取article详情
@@ -194,7 +195,8 @@
             html = new EJS({text: Article.Const.T_SUGGESTION}).render({
                 pre: self.json.pre,
                 next: self.json.next,
-                seriesBlogs: self.json.seriesBlogs
+                seriesBlogs: self.json.seriesBlogs,
+                series: self.json.blog.series
             });
 
             self.content.find(".blog-article-suggest").html(html).show();

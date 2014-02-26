@@ -14,16 +14,16 @@
     <div class="blog-article-cover" data-image="<%= blog.bg %>">
         <div class="bg-wrap"></div>
         <div class="infomation">
-            <h2>
+            <h2 id="series-tip-target">
+                <% if (blog.series) { %>
+                    <p class="series">所属系列：<b><%= blog.series %></b></p>
+                <% } %>
                 <a href="javascript:void(0);"><%= blog.title %></a>
             </h2>
-            <% if (blog.series) { %>
-                <p class="series" id="series-tip-target">所属系列：<b><%= blog.series %></b></p>
-            <% } %>
-            <span class="description">
+            <div class="description">
                 <a class="read" style="display:none;" id="action-read" data-id="<%= blog.id %>" href="javascript:void(0);"></a>
                 <%= blog.description %>
-            </span>
+            </div>
         </div>
     </div>
 </div>

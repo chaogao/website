@@ -101,6 +101,18 @@
 
     ul {
         .x-unstyle();
+
+        p {
+            margin: 0;
+        }
+
+        .desc {
+            color: @x-gray-text;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
     }
 }
 
@@ -172,9 +184,13 @@
             z-index: 1;
         }
 
-        .date,
-        .series {
+        .date {
             margin: 5px 0;
+        }
+
+        .series {
+            font-weight: bold;
+            color: darken(@x-gray-text, 20%);
         }
     }
 }
@@ -337,6 +353,7 @@
 
         .infomation {
             .x-yahei();
+            display: none;
             position: absolute;
             box-sizing: border-box;
             right: 10%;
@@ -351,18 +368,17 @@
             -o-overflow-scrolling: touch;
 
             h2 {
-                margin: 0;
-                padding: 0 0 20px 0;
-                font-size: 4vw;
+                float: left;
+                margin: 0 0 20px 0;
+                padding: 10px 20px;
+                font-size: 28px;
+                background-color: rgba(241, 240, 250, 0.9);
+                font-weight: normal;
 
                 a {
                     .x-transition(color, .3s);
-                    color: @x-gray-smoke;
+                    color: @x-blue-link;
                     text-decoration: none;
-
-                    &:hover {
-                        color: @x-gray;
-                    }
                 }
             }
 
@@ -370,18 +386,18 @@
                 float: right;
                 font-size: 16px;
                 color: @x-white-smoke;
+                clear: both;
             }
         }
 
         .series {
-            float: left;
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: rgba(241, 240, 250, 0.9);
+            margin: 0 0 10px 0;
+            color: darken(@x-gray-text, 20%);
+            font-size: 28px;
+            font-weight: normal;
 
             b {
                 cursor: pointer;
-                color: @x-blue-link;
                 font-weight: normal;
             }
         }
@@ -453,12 +469,29 @@
         background-color: @x-gray-smoke;
 
         dl {
-            margin-bottom: 10px;
+            margin: 0 0 10px 0;
 
             dd {
-                margin-top: 5px;
+                margin: 0;
+                text-indent: 2em;
                 color: @x-gray-text;
             }
+        }
+    }
+
+    .series-content {
+        ul {
+            .x-unstyle;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin: 0;
+            color: @x-gray-text;
+            text-indent: 2em;
         }
     }
 }

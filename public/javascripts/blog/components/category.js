@@ -31,8 +31,8 @@
         '[% $.each(content, function () { %]' +
             '<li class="clearfix">' +
                 '<div class="content">' +
-                    '<a href="/blog/[%= this._id %]">[%= this.series ? this.series + " —— " + this.title : this.title %]</a>' + 
                     '[%= this.series ? "<p class=\'series\'>所属系列：" + this.series + "</p>" : "" %]' + 
+                    '<a href="/blog/[%= this._id %]">[%= this.title %]</a>' + 
                     '<p class="date">' +
                         '[%= this.dateStr %]' +
                     '</p>' +
