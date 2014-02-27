@@ -20,10 +20,11 @@ EJS.config( {cache: true, type: '[', ext: '.ejs' } );
 
     var T_BLOG_LIST = '' +
         '[% $.each(content, function () { %]' +
-            '<div class="content" style="background-image: url([%=this.bg%]!h320)">' +
+            '<div class="content [%= this.top ? "content-top" : "" %]">' +
+                '<div style="background-image: url([%=this.bg%]!w320h320)" class="content-image"></div>' +
                 '<div class="content-info">' + 
                     '[%= this.series ? "<p class=\'series\'>所属系列：" + this.series + "</p>" : "" %]' + 
-                    '<a class="title" href="/blog/[%= this._id %]">[%= this.title %]</a>' + 
+                    '<a class="title" href="/blog/[%= this._id %]">[%= this.top ? "【置顶】" : "" %][%= this.title %]</a>' + 
                     '<a class="read glyphicon glyphicon-circle-arrow-right" href="/blog/[%= this._id %]"></a>' + 
                     '<p class="date">' +
                         '[%= this.dateStr %]' +

@@ -14,10 +14,11 @@
     .mod-tab-item {
         .x-transition(all, 0.3s);
         display: inline-block;
+        padding: 5px;
         margin: 10px;
-        width: 120px;
-        height: 120px;
-        line-height: 120px;
+        width: 110px;
+        height: 110px;
+        line-height: 110px;
         background-color: @x-blue;
         border: 1px solid darken(@x-blue, 10%);
         color: #f6f6f6;
@@ -27,11 +28,22 @@
         border-radius: 60px;
         cursor: pointer;
 
-        &.mod-tab-item-active,
-        &:hover {
+        &.mod-tab-item-active {
+            font-size: 26px;
             background-color: @x-white;
             border: 1px solid @x-gray;
             color: @x-blue;
+
+            &:hover {
+                font-size: 26px;
+                background-color: @x-white;
+                border: 1px solid @x-gray;
+                color: @x-blue;
+            }
+        }
+
+        &:hover {
+            background-color: lighten(@x-blue, 5%);
         }
     }
 }
@@ -51,24 +63,56 @@
     }
 
     .content {
-        .x-transition(opacity, 1s);
+        .x-transition(opacity, 0.3s);
         position: relative;
+        margin: 0 80px 60px 0;
         height: 280px;
+        width: 600px;
         padding: 20px;
-        border: 20px solid #3D3D3D;
-        margin-bottom: 60px;
+        border: 5px solid #3D3D3D;
+        vertical-align: bottom;
         background-repeat: no-repeat;
         background-color: #3D3D3D;
         border-radius: 10px;
         box-shadow: 0px 0px 4px @x-gray;
         opacity: 0;
 
+        &.content-top {
+            border: 5px solid @x-red;
+            background-color: @x-red;
+        }
+
+        &:hover {
+            border: 5px solid @x-blue-light;
+            background-color: @x-blue-light;
+
+            .content-image {
+                -webkit-transform: scale(1.1, 1.1);
+                opacity: 1;
+            }
+        }
+
+        .content-image {
+            .x-transition(all, 0.3s);
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 300px;
+            height: 280px;
+            background-size: cover;
+            opacity: 0.7;
+        }
+
         .content-info {
-            padding: 20px 10px;
-            height: 240px;
-            background: url("/public/images/layouts/texture.png?__sprite") repeat;
-            background-color: fade(@x-white, 80%);
+            display: inline-block;
+            float: right;
+            width: 300px;
+            height: 100%;
+            padding: 20px 10px 20px 30px;
+            background: fade(@x-white, 80%) url("/public/images/layouts/texture.png?__sprite") repeat;
             overflow: hidden;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
 
             p {
                 margin: 0;
@@ -86,14 +130,14 @@
             .title {
                 display: block;
                 font-size: 22px;
-                margin-bottom: 20px;
+                margin-bottom: 10px;
             }
 
             .read {
                 .x-transition(right, .3s);
                 position: absolute;
                 font-size: 56px;
-                top: 50%;
+                top: 40%;
                 right: -40px;
                 text-decoration: none;
 

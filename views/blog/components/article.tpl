@@ -1,7 +1,6 @@
 <div class="blog-article">
     <div class="blog-main">
         <div class="blog-article-category" data-spy="affix" data-offset-top="200"></div>
-        <div class="blog-article-category-hide"></div>
         <div class="blog-article-content">
             <div class="blog-article-markdown"></div>
             <div class="blog-article-comment">

@@ -120,7 +120,8 @@ schema.statics.findByTag = function (name, cb) {
         filter;
         
     if (!name) {
-        filter = {};
+        Blog.adminBlogs(Blog.Const.MIN_FILEDS, cb);
+        return;
     } else {
         filter = {tags: name};
     }

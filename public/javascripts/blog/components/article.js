@@ -23,14 +23,6 @@
             }, 100);
         });
 
-        $(".blog-article-category").on("fixed", function () {
-            $(".blog-article-category-hide").show();
-        });
-
-        $(".blog-article-category").on("nofixed", function () {
-            $(".blog-article-category-hide").hide();
-        });
-
         self.deleagesEvents();
         self.getArticle(id);
         self.initTip();

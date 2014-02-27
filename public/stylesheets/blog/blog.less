@@ -6,12 +6,13 @@
 
     .arrow-left,
     .arrow-right {
-        box-sizing: border-box;
         width: 10%;
         max-width: 50px;
         padding: 0 5px;
         text-align: center;
         cursor: pointer;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
 
         a {
             height: 10vh;
@@ -53,7 +54,6 @@
 
     .blog-category-item {
         position: relative;
-        box-sizing: border-box;
         height: 100%;
         padding: 10px;
         border: 1px solid @x-white;
@@ -61,6 +61,8 @@
         color: @x-white;
         background-color: @x-blue;
         cursor: pointer;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
 
         .description {
             position: absolute;
@@ -118,11 +120,12 @@
 
 .tip-blog-category {
     .x-transition(left, .3s);
-    box-sizing: border-box;
     width: 500px;
     padding: 20px;
     background-color: rgba(241, 240, 250, 0.9);
     box-shadow: 0px 0px 4px @x-black-dark;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
 
     .action-close {
         position: absolute;
@@ -199,6 +202,10 @@
     .blog-article .blog-main .blog-article-category {
         display: none;
     }
+
+   .blog-article .blog-main .blog-article-content {
+        margin-left: 8px;
+    }
 }
 
 /**
@@ -209,30 +216,24 @@
         .x-transition(opacity, 0.5s);
         display: none;
         opacity: 0;
-        -webkit-box-orient:horizontal;
 
         &.blog-main-show {
             opacity: 1;
-            display: -webkit-box;
+            display: block;
         }
     }
 
-    .blog-article-category-hide {
-        display: none;
-        width: 20%;
-        max-width: 240px;
-    }
-
     .blog-article-category {
+        float: left;
         position: relative;
-        box-sizing: border-box;
         display: block;
-        width: 20%;
-        max-width: 240px;
+        width: 240px;
         padding: 10px;
         font-size: 12px;
         line-height: 28px;
         overflow: hidden;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
 
         ul {
             .x-unstyle;
@@ -355,7 +356,6 @@
             .x-yahei();
             display: none;
             position: absolute;
-            box-sizing: border-box;
             right: 10%;
             left: 5%;
             padding: 10px 20px;
@@ -366,6 +366,8 @@
             -webkit-overflow-scrolling: touch;
             -moz-overflow-scrolling: touch;
             -o-overflow-scrolling: touch;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
 
             h2 {
                 float: left;
@@ -406,14 +408,14 @@
     .blog-article-content {
         position: relative;
         display: block;
-        box-sizing: border-box;
         padding: 10px 20px;
-        margin-bottom: 20px;
+        margin: 0 8px 20px 240px;
         font-size: 14px;
         background-color: @x-white;
         box-shadow: 0px 0px 10px @x-gray;
         overflow: hidden;
-        -webkit-box-flex: 1;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
 
         ul ul,
         ol ul {
