@@ -10,6 +10,8 @@ exports.init = function (app) {
     app.get("/blog/view/:id", routes.blogView);
     app.get("/blogtag/:name", routes.blogTag);
     app.get("/blogtag", routes.blogTag);
+    app.get("/blogseries", routes.blogSeries);
+    app.get("/blogseries/:name", routes.blogSeries);
 }
 
 routes.index = function (req, res) {
@@ -117,6 +119,27 @@ routes.blogTag = function (req, res) {
                 console.log(blog);
             });
 
+
+            res.json({
+                error: 0,
+                content: datas,
+            });
+        }
+    });
+}
+
+
+/* 通过 series 获取blog数据 */
+routes.blogSeries = function (req, res) {
+    var name = req.params.name;
+
+    Blog.findBySeries(name, function (error, datas) {
+        if (error) {
+            res.status(404).render("404.tpl");
+        } else {
+            datas.forEach(function (blog) {
+                blog.set("dateStr", blog.date.toFormat("YYYY-MM-DD HH24:MI:SS"));
+            });
 
             res.json({
                 error: 0,

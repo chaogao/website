@@ -2087,21 +2087,23 @@ define("jsmod/ui/fixElement/tip", function(require, exports, module) {
          * @private
          * @param {string} title
          * @param {string} content
+         * @param {string} className
+         * @param {bool}   inner
          */
-        getTipHTML: function (title, content, className) {
+        getTipHTML: function (title, content, className, inner) {
             if (main.config == "baidu") {
                 return [
-                    '<div class="module ' + (className || "") + '">',
+                    !inner ? '<div class="module ' + (className || "") + '">' : "",
                         title ? '<div class="module-hd">' + title + '</div>' : "",
                         content ? '<div class="module-bd">' + content + '</div>' : "",
-                    '</div>'
+                    !inner ? '</div>' : ""
                 ].join("");
             } else {
                 return [
-                    '<div class="mod-tip ' + (className || "") + '">',
+                    !inner ? '<div class="mod-tip ' + (className || "") + '">' : "",
                         title ? '<div class="mod-tip-hd">' + title + '</div>' : "",
                         content ? '<div class="mod-tip-bd">' + content + '</div>' : "",
-                    '</div>'
+                    !inner? '</div>': ""
                 ].join("");
             }
         },
@@ -2368,7 +2370,10 @@ define("jsmod/ui/fixElement/tip", function(require, exports, module) {
                 html;
 
             if (tip && (option.title || option.content)) {
-                tip.redraw(self.getTipHTML(option.title, option.content, self.option.className));
+                var html = self.getTipHTML(option.title, option.content, self.option.className, true);
+
+                tip.getElement().html(html);
+                tip.redraw();
                 $.extend(self.option, {
                     title: option.title,
                     content: option.content
@@ -2398,7 +2403,7 @@ define("jsmod/ui/fixElement/tip", function(require, exports, module) {
 
                 $(this).removeData("shown");
 
-                self.getFixElement(this).destroy();
+                self.getFixElement(this) && self.getFixElement(this).destroy();
             });
         }
     });

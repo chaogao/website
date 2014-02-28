@@ -1,6 +1,6 @@
 git pull
 
-fis release -pocd ../www
+fis release -pmocd ../www
 
 cd ../www
 
