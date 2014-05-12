@@ -51,12 +51,13 @@ routes.blog = function (req, res) {
                 if (!blog) {
                     console.log("no blog");
                     error = {errorNo: 1, errorMsg: "no blog"};
+                    callback(error, blog);
+                } else {
+                    // 设置 blog 数据
+                    data.blog = blog;
+                    data.title = blog.title;
+                    callback(error, blog);
                 }
-
-                // 设置 blog 数据
-                data.blog = blog;
-                data.title = blog.title;
-                callback(error, blog);
             });
         },
         function (blog, callback) {
@@ -100,6 +101,7 @@ routes.blogView = function (req, res) {
         if (error) {
             res.status(404).render("404.tpl");
         } else {
+            datas.blog.set("dateStr", datas.blog.date.toFormat("YYYY-MM-DD HH24:MI:SS"));
             res.json(datas);
         }
     });

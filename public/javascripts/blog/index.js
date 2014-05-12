@@ -23,19 +23,21 @@ EJS.config( {cache: true, type: '[', ext: '.ejs' } );
     var T_BLOG_LIST = '' +
         '[% $.each(content, function () { %]' +
             '<div class="content [%= this.top ? "content-top" : "" %]">' +
-                '<a href="/blog/[%= this._id %]" style="background-image: url([%=this.bg%]!w320h320)" class="content-image"></a>' +
-                '<div class="content-info">' + 
-                    '[%= this.series ? "<p data-series=\'" + this.series + "\' class=\'series\'>所属系列：" + this.series + "</p>" : "" %]' + 
-                    '<a class="title" href="/blog/[%= this._id %]">[%= this.top ? "【置顶】" : "" %][%= this.title %]</a>' + 
-                    '<a class="read glyphicon glyphicon-circle-arrow-right" href="/blog/[%= this._id %]"></a>' + 
-                    '<p class="date">' +
-                        '[%= this.dateStr %]' +
-                    '</p>' +
-                    '<div class="description">' +
-                        '[% if (this.titleBg) { %]' +
-                            '<div class="background" style="background: url([%= this.titleBg%]) no-repeat top right"></div>' +
-                        '[% } %]' +
-                        '[%= this.description %]' +
+                '<a href="/blog/[%= this._id %]" class="content-cover">See more</a>' +
+                '<div class="content-main">' +
+                    '<a href="/blog/[%= this._id %]" style="background-image: url([%=this.bg%]!w320h320)" class="content-image"></a>' +
+                    '<div class="content-info">' + 
+                        '[%= this.series ? "<p data-series=\'" + this.series + "\' class=\'series\'>所属系列：" + this.series + "</p>" : "" %]' + 
+                        '<a class="title" href="/blog/[%= this._id %]">[%= this.top ? "【置顶】" : "" %][%= this.title %]</a>' + 
+                        '<p class="date">' +
+                            '[%= this.dateStr %]' +
+                        '</p>' +
+                        '<div class="description">' +
+                            '[% if (this.titleBg) { %]' +
+                                '<div class="background" style="background: url([%= this.titleBg%]) no-repeat top right"></div>' +
+                            '[% } %]' +
+                            '[%= this.description %]' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>' +

@@ -29,13 +29,11 @@
         cursor: pointer;
 
         &.mod-tab-item-active {
-            font-size: 26px;
             background-color: @x-white;
             border: 1px solid @x-gray;
             color: @x-blue;
 
             &:hover {
-                font-size: 26px;
                 background-color: @x-white;
                 border: 1px solid @x-gray;
                 color: @x-blue;
@@ -49,7 +47,6 @@
 }
 
 .blog-index-list {
-    box-sizing: border-box;
     padding: 20px 100px 20px 30px;
     margin-left: 300px;
     height: 100%;
@@ -57,98 +54,99 @@
     background-color: @x-white;
     overflow-y: auto;
     box-shadow: 1px 0px 2px @x-gray;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
 
     &.loading {
         background: #ffffff url("/public/images/blog/Teddy_Bear_Loading.gif") no-repeat center center;
     }
 
     .content {
-        .x-transition(opacity, 0.3s);
+        .x-transition(all, 0.6s);
         position: relative;
-        margin: 0 80px 60px 0;
-        height: 280px;
-        width: 600px;
         padding: 20px;
-        border: 5px solid #3D3D3D;
-        vertical-align: bottom;
-        background-repeat: no-repeat;
-        background-color: #3D3D3D;
-        border-radius: 10px;
+        margin-bottom: 60px;
         box-shadow: 0px 0px 4px @x-gray;
         opacity: 0;
 
-        &.content-top {
-            border: 5px solid @x-red;
-            background-color: @x-red;
+        &:hover .content-cover {
+            display: block;
+            opacity: 1;
         }
 
-        &:hover {
-            border: 5px solid @x-blue-light;
-            background-color: @x-blue-light;
+        .content-cover {
+            .x-transition(opacity, 0.5s);
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background-color: fade(@x-blue, 20%);
+            z-index: 3;
+            opacity: 0;
+            color: @x-white;
+            text-shadow: 1px 0px 2px @x-black;
+            font-size: 64px;
+            line-height: 520px;
+            text-decoration: none;
+            text-align: center;
+        }
 
-            .content-image {
-                -webkit-transform: scale(1.1, 1.1);
-                opacity: 1;
-            }
+        .content-main {
+            position: relative;
+            margin: 0 auto;
+            height: 480px;
+            width: 650px;
         }
 
         .content-image {
             .x-transition(all, 0.3s);
             position: absolute;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
-            width: 300px;
-            height: 280px;
+            width: 60%;
+            height: 380px;
             background-size: cover;
-            opacity: 0.4;
         }
 
         .content-info {
             display: inline-block;
+            position: relative;
             float: left;
-            width: 300px;
-            height: 100%;
+            width: 60%;
+            height: 440px;
             padding: 20px 30px 20px 10px;
-            background: fade(@x-white, 80%) url("/public/images/layouts/texture.png?__sprite") repeat;
-            overflow: hidden;
-            box-sizing: border-box;
-            -moz-box-sizing: border-box;
+            background: fade(#1D282C, 95%) url("/public/images/layouts/texture.png?__sprite") repeat;
+            color: @x-white;
+            z-index: 1;
+
+            a {
+                color: @x-white;
+            }
 
             p {
                 margin: 0;
             }
 
             .series {
-                font-size: 18px;
-                color: darken(@x-gray-text, 20%);
+                font-size: 16px;
                 cursor: pointer;
-
-                &:hover {
-                    color: @x-gray-text;
-                }
+                border-bottom: 2px solid @x-white;
+                line-height: 36px;
             }
 
-            .desc {
-                color: @x-gray-text;
+            .description {
+                color: @x-gray-smoke;
+                line-height: 2;
+                font-size: 14px;
             }
 
             .title {
                 display: block;
-                font-size: 18px;
-                margin-bottom: 10px;
-            }
-
-            .read {
-                .x-transition(right, .3s);
-                position: absolute;
-                font-size: 56px;
-                top: 40%;
-                right: -40px;
+                font-size: 26px;
+                line-height: 46px;
+                margin: 20px 0;
                 text-decoration: none;
-
-                &:hover {
-                    right: -50px;
-                }
             }
         }
     }
