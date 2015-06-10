@@ -1,8 +1,8 @@
 git pull
 
-fis release -pmocd ../www
+fis release -pmocd /server/webroot
 
-cd ../www
+cd /server/webroot
 
 forever restart app.js
 

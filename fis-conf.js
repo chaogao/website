@@ -29,7 +29,7 @@ fis.config.merge({
                 useCache: false
             },
             {
-                reg : /^\/(node_modules|routes|app.js)/i,
+                reg : /^\/(db|node_modules|routes|app.js|models|plugin)/i,
                 useCompile: false,
                 isHtmlLike: false,
                 isJsLike: false,
