@@ -2,18 +2,17 @@
  * 用户model
  * @model User
  */
-var mongoose = require("mongoose"),
-    crypto = require("crypto"),
+var crypto = require("crypto"),
     deferred = require("deferred"),
-    Dig = "hex", schema, User;
+    Dig = "hex";
 
-schema = mongoose.Schema({
-    name: String,
-    password: String,
-    root: Boolean
-});
+var Connection = require('../db');
 
-schema.statics.validate = function (name, password) {
+var User = function () {
+    this.conn =  Connection.get();
+}
+
+User.prototype.validate = function (name, password) {
     var self = this;
 
     return (function () {
@@ -23,19 +22,32 @@ schema.statics.validate = function (name, password) {
 
         console.log(md5Password);
 
-        user = self.findOne({name: name}, function (erro, user) {
-            var result = (!erro && user && user.password == md5Password) ? true : false;
+        self.conn.query('select * from blog_user where name = ?', [name], function (error, raw) {
+            var result = (!error && raw[0] && raw[0].passport == md5Password) ? true : false;
 
-            dfd.resolve({valid: result, user: user});
+            dfd.resolve({valid: result, user: raw[0]});
         });
 
         return dfd.promise();
     })();
 }
 
-schema.methods.saveUser = function (cb) {
-    this.password = crypto.createHash("md5").update(this.password).digest(Dig);
-    this.save(cb);
+/**
+ * 存储由前端传入的用户信息
+ * @param  {[type]}   user [description]
+ * @param  {Function} cb   [description]
+ * @return {[type]}        [description]
+ */
+User.prototype.saveUser = function (user, cb) {
+    var passport = crypto.createHash("md5").update(user.password).digest(Dig);
+
+    this.conn.query("INSERT INTO blog_user SET ? ", {
+        name: user.name,
+        passport: passport,
+        create_time: (new Date()).getTime()
+    }, function (error, raw) {
+        cb.apply(this, arguments);
+    });
 }
 
-module.exports = User = mongoose.model("User", schema);
+module.exports = new User();

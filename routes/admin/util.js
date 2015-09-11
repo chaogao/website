@@ -21,6 +21,7 @@ module.exports = {
     setSesstion: function (req, app, user) {
         req.session.user = user;
         app.locals.user = user;
+        console.log(user);
     },
     /**
      * 删除session，同时删除locals

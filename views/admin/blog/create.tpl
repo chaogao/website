@@ -1,4 +1,5 @@
 <% include ../../layouts/head.admin.tpl %>
+<div class="ng-app-content" ng-app="article-create" ng-controller="articleController as article">
     <p class="category-title">添加</p>
 
     <% if (error) { %>
@@ -8,19 +9,19 @@
     <form class="blog-form" method="post" action="/admin/blog">
         <p>
             <span>标题</span>
-            <input name="blog[title]">
+            <input name="blog[title]" ng-model="article.data.title">
         </p>
         <p>
             <span>描述</span>
-            <input name="blog[description]">
+            <input name="blog[description]" ng-model="article.data.description">
         </p>
         <p>
             <span>主背景</span>
-            <input name="blog[bg]">
+            <input name="blog[bg]" ng-model="article.data.bg">
         </p>
         <p>
             <span>副背景</span>
-            <input name="blog[titleBg]">
+            <input name="blog[titleBg]" ng-model="article.data.titleBg">
         </p>
         <p>
             <span>系列</span>
@@ -44,8 +45,22 @@
         </div>
     </form>
 
-    <div class="marked-content"></div>
+    <div class="marked-content">
+        <p class="dis-article-title">{{article.data.title || '请输入标题'}}</p>
+
+        <div class="dis-description-view">{{article.data.description}}</div>
+
+        <div class="dis-bg-view">
+            <p>背景</p>
+            <img src="{{article.data.bg}}">
+            <img src="{{article.data.titleBg}}">
+        </div>
+
+        <div class="dis-marked-view"></div>
+    </div>
+</div>
 
 <% include ../../layouts/footer.tpl %>
 <script src="/public/libs/ace/src/ace.js"></script>
+<script src="/public/javascripts/admin/blog/create.js"></script>
 <script src="/public/javascripts/admin/index.js"></script>

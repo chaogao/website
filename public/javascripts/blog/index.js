@@ -25,17 +25,15 @@ EJS.config( {cache: true, type: '[', ext: '.ejs' } );
             '<div class="content [%= this.top ? "content-top" : "" %]">' +
                 '<a href="/blog/[%= this._id %]" class="content-cover">See more</a>' +
                 '<div class="content-main">' +
-                    '<a href="/blog/[%= this._id %]" style="background-image: url([%=this.bg%]!w320h320)" class="content-image"></a>' +
+                    '<a href="/blog/[%= this._id %]" class="content-image"></a>' +
                     '<div class="content-info">' + 
                         '[%= this.series ? "<p data-series=\'" + this.series + "\' class=\'series\'>所属系列：" + this.series + "</p>" : "" %]' + 
                         '<a class="title" href="/blog/[%= this._id %]">[%= this.top ? "【置顶】" : "" %][%= this.title %]</a>' + 
+                        '<img class="bg" src="[%=this.ext.bg%]">' + 
                         '<p class="date">' +
                             '[%= this.dateStr %]' +
                         '</p>' +
                         '<div class="description">' +
-                            '[% if (this.titleBg) { %]' +
-                                '<div class="background" style="background: url([%= this.titleBg%]) no-repeat top right"></div>' +
-                            '[% } %]' +
                             '[%= this.description %]' +
                         '</div>' +
                     '</div>' +
@@ -113,7 +111,7 @@ EJS.config( {cache: true, type: '[', ext: '.ejs' } );
                 aj && aj.abort();
 
                 aj = $.ajax({
-                    url: "/blogtag/" + (tagName || "")
+                    url: "/blogtag/"
                 }).done(function (json) {
                     $(".blog-index-list").removeClass("loading").html(new EJS({text: T_BLOG_LIST}).render(json));
                     $(".blog-index-list .content").css("opacity", 1);

@@ -1,9 +1,34 @@
-/**
- * 初始化mongodb连接
- */
-var conf = require("./conf"),
-    mongoose = require("mongoose");
+var mysql = require('mysql');
+var conn;
 
-module.exports = (function() {
-    return mongoose.connect("mongodb://" + conf.user + ":" + conf.pass + "@" + conf.host + "/" + conf.db);
-})();
+var Connection = {
+    create: function () {
+        conn = mysql.createPool({
+            host     : '120.25.210.249',
+            user     : 'root',
+            password : '4085903dAg',
+            database : 'blog'
+        });
+
+        this.listen(conn);
+    },
+    get: function () {
+        return conn;
+    },
+    /**
+     * 连接的监听
+     * @param  {[type]} conn [description]
+     * @return {[type]}      [description]
+     */
+    listen: function (conn) {
+        conn.on('connection', function (connection) {
+            console.log('etabish connection');
+        });
+
+        conn.on('enqueue', function () {
+          console.log('Waiting for available connection slot');
+        });
+    }
+}
+
+module.exports = Connection;

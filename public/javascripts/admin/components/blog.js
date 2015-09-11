@@ -9,7 +9,7 @@
     /**
      * 删除日志
      */
-    $(".admin-blog-list").delegate(".admin-blog-del", "click", function () {
+    $(".admin-blog-list").delegate(".admin-article-del", "click", function () {
         var parent = $(this).parents("p"),
             id = parent.data("id"),
             title = parent.data("title");
@@ -19,7 +19,7 @@
         if (r) {
             $.ajax({
                 method: "post",
-                url: "/admin/blogdelete",
+                url: "/admin/articledelete",
                 data: {id: id}
             }).done(function (r) {
                 if (r.code == 0) {
@@ -32,7 +32,7 @@
     /**
      * 置顶日志
      */
-    $(".admin-blog-list").delegate(".admin-blog-top", "click", function () {
+    $(".admin-blog-list").delegate(".admin-article-top", "click", function () {
         var parent = $(this).parents("p"),
             id = parent.data("id"),
             title = parent.data("title");
@@ -42,7 +42,7 @@
         if (r) {
             $.ajax({
                 method: "post",
-                url: "/admin/blogtop",
+                url: "/admin/articletop",
                 data: {id: id}
             }).done(function (r) {
                 if (r.code == 0) {
@@ -65,7 +65,7 @@
         var html;
 
         html = marked(editor.getValue());
-        $(".marked-content").html(html);
+        $(".dis-marked-view").html(html);
     });
 
     /**
@@ -75,7 +75,7 @@
         var val;
 
         $(".editor-content").height($(window).height());
-        $(".marked-content").height($(window).height() - 50);
+        $(".dis-marked-view").height($(window).height() - 50);
 
         editor = ace.edit("editor");
         editor.setTheme("ace/theme/monokai");
@@ -94,9 +94,9 @@
                 sPer = top / sHeight,
                 height, top;
 
-            height = $(".marked-content").get(0).scrollHeight;
+            height = $(".dis-marked-view").get(0).scrollHeight;
             top = height * sPer;
-            $(".marked-content").scrollTop(parseInt(top));
+            $(".dis-marked-view").scrollTop(parseInt(top));
         });
 
         val = $(".blog-form .editor-textarea").val();
@@ -170,7 +170,7 @@
         });
 
         self.dialog.content.find(".submit").on("click", function (e) {
-            if (self.file && self.file.size <= 102400 * 2 && /image/.test(self.file.type)) {
+            if (self.file && self.file.size <= 102400 * 10 && /image/.test(self.file.type)) {
                 self.upload(function (json) {
                     if (!json || json.code) {
                         self.dialog.content.find(".info").html("error");
@@ -178,6 +178,8 @@
                         self.dialog.content.find(".info").html("![Alt text](" + json.url + ")");
                     }
                 });
+            } else {
+                alert("图片参数或大小有误重新选择");
             }
 
             return false;

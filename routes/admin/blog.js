@@ -4,7 +4,7 @@
  */
 var fs = require("fs"),
     path = require("path"),
-    Blog = require("../../models/blog"),
+    article = require("../../models/blog"),
     Tag = require("../../models/tag"),
     Series = require("../../models/series"),
     util = require("./util"),
@@ -31,7 +31,7 @@ NEED_CHECK_ROUTES = [
     },
     {
         "method": "get",
-        "url": "/admin/blog/:id"
+        "url": "/admin/article/:id"
     },
     {
         "method": "post",
@@ -39,11 +39,11 @@ NEED_CHECK_ROUTES = [
     },
     {
         "method": "post",
-        "url": "/admin/blogdelete"
+        "url": "/admin/articledelete"
     },
     {
         "method": "post",
-        "url": "/admin/blogtop"
+        "url": "/admin/articletop"
     },
     {
         "method": "post",
@@ -52,7 +52,7 @@ NEED_CHECK_ROUTES = [
 ];
 
 exports.init = function (app) {
-    util.needCheckLogin(app, NEED_CHECK_ROUTES);
+    // util.needCheckLogin(app, NEED_CHECK_ROUTES);
 
     /**
      * blog列表 action:get
@@ -60,14 +60,9 @@ exports.init = function (app) {
     app.get("/admin/blog", function (req, res) {
         var blogs;
 
-        Blog.adminBlogs(Blog.Const.MIN_FILEDS, function(error, blogs) {
-
-            blogs.forEach(function (blog) {
-                blog.dateStr = blog.date.toFormat("YYYY-MM-DD HH24:MI:SS");
-            });
-
+        article.adminBlogs(article.conf.LITE_FILEDS, function(error, articles) {
             if (!error) {
-                res.render("admin/blog/index.tpl", {title: "Blog List", blogs: blogs});
+                res.render("admin/blog/index.tpl", {title: "Blog List", articles: articles});
             }
         });
     });
@@ -86,22 +81,10 @@ exports.init = function (app) {
      * 创建blog action:post
      */
     app.post("/admin/blog", function (req, res) {
-        var blog;
+        // console.log(req.session.user.name);
+        // req.body.blog.author = req.session.user.name;
 
-        req.body.blog.author = req.session.user.name;
-
-        if (!req.body.blog.tags) {
-            req.body.blog.tags = new Array();
-        } else {
-            req.body.blog.tags.forEach(function (tag) {
-                var tag = new Tag({name: tag});
-                tag.saveTag();
-            });
-        }
-
-        blog = new Blog(req.body.blog);
-
-        blog.saveBlog(function (error, blog) {
+        article.saveBlog(req.body.blog, function (error, blog) {
             var msg;
 
             if (error) {
@@ -125,14 +108,14 @@ exports.init = function (app) {
     /**
      * 编辑页面 action:get
      */
-    app.get("/admin/blog/:id", function (req, res) {
-        var id = req.params.id,
-            blog;
+    app.get("/admin/article/:id", function (req, res) {
+        var id = req.params.id;
 
-        Blog.findById(id).exec(function (error, blog) {
-            if (!error && blog) {
+        article.findById(id, article.conf.FULL_FILEDS, function (error, article) {
+
+            if (!error && article[0]) {
                 res.render("admin/blog/edit.tpl", {
-                    blog: blog,
+                    article: article[0],
                     title: "编辑",
                     error: req.flash("error")
                 });
@@ -174,12 +157,17 @@ exports.init = function (app) {
     });
 
     /**
-     * 删除blog action:post
+     * 删除日志
      */
-    app.post("/admin/blogdelete", function (req, res) {
+    app.post("/admin/articledelete", function (req, res) {
         var id = req.body.id;
 
-        Blog.remove({_id: id}).exec(function (error) {
+        if (!id) {
+            res.json({code: -1, msg: "input error"});
+            return;
+        }
+
+        article.delArticle(id, function (error, raw) {
             if (!error) {
                 res.json({code: 0});
             } else {
@@ -191,18 +179,21 @@ exports.init = function (app) {
     /**
      * 设置置顶 action:post
      */
-    app.post("/admin/blogtop", function (req, res) {
+    app.post("/admin/articletop", function (req, res) {
         var id = req.body.id;
 
-        if (id) {
-            Blog.setTop(id, function (error) {
-                if (!error) {
-                    res.json({code: 0});
-                } else {
-                    res.json({code: -1, msg: "server error"});
-                }
-            });
+        if (!id) {
+            res.json({code: -1, msg: "input error"});
+            return;
         }
+
+        article.topArticle(id, function (error) {
+            if (!error) {
+                res.json({code: 0});
+            } else {
+                res.json({code: -1, msg: "server error"});
+            }
+        });
     });
 
     /**
@@ -214,7 +205,7 @@ exports.init = function (app) {
         file = req.files.image;
         basename = path.basename(file.path);
 
-        if (file.size <= 0 || file.size > 102400 * 2) {
+        if (file.size <= 0 || file.size > 102400 * 10) {
             return res.json({code: -1, msg: "no valid input"});
         }
 

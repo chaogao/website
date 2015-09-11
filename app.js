@@ -1,7 +1,6 @@
-
-/**
- * Module dependencies.
- */
+// 建立 mysql 链接
+var Connection = require('./db');
+Connection.create();
 
 var express = require('express'),
     flash = require("connect-flash"),
@@ -9,36 +8,40 @@ var express = require('express'),
     admin = require('./routes/admin'),
     http = require('http'),
     path = require('path'),
-    MongoStore = require('connect-mongo')(express),
     conf = require("./db/conf"),
     app, fs, accessLog, errorLog;
 
+// 设置日志路径
 fs = require("fs");
 accessLog = fs.createWriteStream('access.log', {flags: 'a'});
 errorLog = fs.createWriteStream('error.log', {flags: 'a'});
-require("./db");
 
 app = express();
+// 设置模板类型
 app.engine('tpl', require('ejs').renderFile);
 
-// all environments
+// 基本设置
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
+
+// cookie session flash 设置
 app.use(express.cookieParser());
 app.use(express.session({
     secret: conf.cookieSecret,
-    cookie: {maxAge: 1000 * 60 * 60 * 24 * 30},
-    store: new MongoStore({
-        db: conf.db,
-        host: conf.host,
-        username: conf.user,
-        password: conf.pass
-    })
+    cookie: {maxAge: 1000 * 60 * 60 * 24 * 30}
 }));
 app.use(flash());
+app.use(function (req, res, next) {
+    res.locals.user = req.session.user;
+    next();
+});
+
+// 基本设置
 app.use(express.favicon());
 app.use(express.logger({stream: accessLog}));
+
+// 上传服务设置
 app.use(express.bodyParser(
     {
         uploadDir: "./public/upload",
@@ -46,21 +49,28 @@ app.use(express.bodyParser(
     }
 ));
 app.use(express.methodOverride());
-app.use(function (req, res, next) {
-    res.locals.user = req.session.user;
-    next();
-});
+
 // development only
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
     app.use("/public", express.static(__dirname + '/public'));
 }
+
+// 路由
 app.use(app.router);
-// app.use(function (err, req, res, next) {
-//     var meta = '[' + new Date() + '] ' + req.url + '\n';
-//     errorLog.write(meta + err.stack + '\n');
-//     next();
-// });
+
+// access log
+app.use(function (err, req, res, next) {
+    var meta = '[' + new Date() + '] ' + req.url + '\n';
+
+    if (err) {
+        errorLog.write(meta + err.stack + '\n');
+    } else {
+        accessLog.write(meta + '\n');
+    }
+
+    next();
+});
 
 blog.init(app);
 admin.init(app);

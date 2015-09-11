@@ -15,6 +15,7 @@
     "connect-mongo": "*",
     "date-utils": "*",
     "markdown": "*",
-    "async": "*"
+    "async": "*",
+    "mysql": "*"
   }
 }

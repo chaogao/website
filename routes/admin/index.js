@@ -69,24 +69,23 @@ exports.init = function (app) {
     });
 
     // 只有开发环境下才可用
-    if (app.get('env') == "development") {
-        app.get("/admin/add", function (req, res) {
-            res.render("admin/add.tpl", {title: "管理员添加"});
-        });
+    // if (app.get('env') == "development") {
+    app.get("/admin/add", function (req, res) {
+        res.render("admin/add.tpl", {title: "管理员添加"});
+    });
 
-        app.post("/admin/add", function (req, res) {
-            var user = req.body.user;
+    app.post("/admin/add", function (req, res) {
+        var user = req.body.user;
 
-            if (user.name && user.password) {
-                u = new User(user);
-                u.saveUser(function (err, user) {
-                    if (!err) {
-                        res.redirect("/admin");
-                    }
-                });
-            }
-        });
-    }
+        if (user.name && user.password) {
+            User.saveUser(user, function (err, user) {
+                if (!err) {
+                    res.redirect("/admin");
+                }
+            });
+        }
+    });
+    // }
 
     blogAdmin.init(app);
 }

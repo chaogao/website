@@ -1,7 +1,8 @@
 var routes = {},
-    Blog = require("../../models/blog.js"),
-    Tag = require("../../models/tag.js"),
-    async = require("async");
+    blog = require("../../models/blog.js"),
+    tag = require("../../models/tag.js"),
+    async = require("async"),
+    count = 0;
 
 exports.init = function (app) {
     app.get("/", routes.index);
@@ -17,14 +18,14 @@ exports.init = function (app) {
 routes.index = function (req, res) {
     var id = req.params.id,
         data = {
-            title: "ddg的前端世界"
+            title: "jser-world",
+            user: {"name": "xx"}
         };
 
     async.waterfall([
         function (callback) {
-            // 设置 tag 数据
-            Tag.find().exec(function (error, tags) {
-                data.tags = tags;
+            tag.find(null, function (error, raw) {
+                data.tags = raw;
                 callback(error);
             });
         }
@@ -40,6 +41,22 @@ routes.index = function (req, res) {
         }
     });
 };
+
+/* 通过 tag 获取blog数据 */
+routes.blogTag = function (req, res) {
+    var name = req.params.name;
+
+    blog.findByTag(name, blog.conf.LITE_FILEDS, function (error, datas) {
+        if (error) {
+            res.status(404).render("404.tpl");
+        } else {
+            res.json({
+                error: 0,
+                content: datas,
+            });
+        }
+    });
+}
 
 routes.blog = function (req, res) {
     var id = req.params.id,
@@ -103,29 +120,6 @@ routes.blogView = function (req, res) {
         } else {
             datas.blog.set("dateStr", datas.blog.date.toFormat("YYYY-MM-DD HH24:MI:SS"));
             res.json(datas);
-        }
-    });
-}
-
-/* 通过 tag 获取blog数据 */
-routes.blogTag = function (req, res) {
-    var name = req.params.name;
-
-    Blog.findByTag(name, function (error, datas) {
-        if (error) {
-            res.status(404).render("404.tpl");
-        } else {
-
-            datas.forEach(function (blog) {
-                blog.set("dateStr", blog.date.toFormat("YYYY-MM-DD HH24:MI:SS"));
-                console.log(blog);
-            });
-
-
-            res.json({
-                error: 0,
-                content: datas,
-            });
         }
     });
 }

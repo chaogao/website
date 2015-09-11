@@ -1,7 +1,7 @@
 module.exports = {
-    "host": "42.96.164.234",
-    "db": "website",
-    "cookieSecret": "website",
-    "user": "website",
-    "pass": "4085903.com"
+    "host": "120.25.210.249",
+    "user": "root",
+    "pass": "4085903dAg",
+    "db": "blog",
+    "cookieSecret": "website"
 }
