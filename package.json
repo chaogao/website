@@ -16,6 +16,7 @@
     "date-utils": "*",
     "markdown": "*",
     "async": "*",
-    "mysql": "*"
+    "mysql": "*",
+    "swig": "*"
   }
 }

@@ -46,6 +46,7 @@ User.prototype.saveUser = function (user, cb) {
         passport: passport,
         create_time: (new Date()).getTime()
     }, function (error, raw) {
+        console.log(error);
         cb.apply(this, arguments);
     });
 }

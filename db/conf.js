@@ -3,5 +3,6 @@ module.exports = {
     "user": "root",
     "pass": "4085903dAg",
     "db": "blog",
-    "cookieSecret": "website"
+    "cookieSecret": "website",
+    "aboutId": 31
 }

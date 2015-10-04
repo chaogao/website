@@ -2,16 +2,17 @@
  * @module models/blog
  */
 var Connection = require("../db");
+var Conf = require("../db/conf");
 var async = require("async");
-
+var blogUtil = require("./components/util");
+var Tag = require("./tag");
 
 var TABLE_NAME = 'blog_article';
 
 var FIELDS_CONST = {
     LITE_FILEDS: ['id', 'title', 'series_name', 'series_id', 'description', 'author', 'ext', 'update_time', 'top', 'draft'],
-    FULL_FILEDS: ['id', 'title', 'series_name', 'series_id', 'description', 'author', 'content', 'ext', 'update_time', 'create_time', 'top', 'draft'],
-    EXT_FIELDS: ['bg', 'titleBg']    
-
+    FULL_FILEDS: ['id', 'title', 'series_name', 'series_id', 'description', 'author', 'content', 'ext', 'update_time', 'create_time', 'top', 'draft', 'tag'],
+    EXT_FIELDS: ['bg', 'titleBg']
 }
 
 /**
@@ -49,7 +50,7 @@ Article.prototype.adminBlogs = function (fields, cb) {
 
                     // 处理 ext 数据
                     result.forEach(function (item) {
-                        item.ext = item.ext && JSON.parse(item.ext) || {};
+                        blogUtil.transBlog(item);
                     });
 
                     cb.apply(this, [error, result]);
@@ -59,6 +60,14 @@ Article.prototype.adminBlogs = function (fields, cb) {
     ], function (error) {
         // todo logo
     });
+}
+
+/**
+ * 获取关于的 blog
+ */
+Article.prototype.findAbout = function (fileds, cb) {
+    var id = Conf.aboutId;
+    this.findById(id, fileds, cb);
 }
 
 /**
@@ -72,7 +81,14 @@ Article.prototype.findByTag = function (name, fields, cb) {
     if (!name) {
         self.adminBlogs(fields, cb);
     } else {
-        // todo gaochao
+        this.conn.query("select ?? from blog_article where del=0 and `tag` like ?", [fields, "%" + name + "%"], function (err, raw) {
+            // 处理日志数据
+            raw && raw.length && raw.forEach(function (item) {
+                blogUtil.transBlog(item);
+            });
+
+            cb(err, raw);
+        });
     }
 }
 
@@ -80,11 +96,29 @@ Article.prototype.findByTag = function (name, fields, cb) {
  * 通过 tag 获取日志
  */
 Article.prototype.findById = function (id, fields, cb) {
-    this.conn.query("SELECT ?? FROM blog_article where id=?", [fields, id], function (error, raw) {
+    this.conn.query("SELECT ?? FROM blog_article where id=?", [fields, id], function (err, raw) {
         raw.forEach(function (item) {
-            item.ext = item.ext && JSON.parse(item.ext) || {};
+            blogUtil.transBlog(item);
         });
-        cb.apply(this, arguments);
+
+        cb(err, raw);
+    });
+}
+
+/**
+ * 获取置顶的日志
+ */
+Article.prototype.findTop = function (fields, cb) {
+    this.conn.query("SELECT ?? FROM blog_article where top=?", [fields, 1], function (err, raw) {
+        var blog;
+
+        // 处理日志数据
+        raw && raw.length && raw.forEach(function (item) {
+            blogUtil.transBlog(item);
+        });
+        blog = raw && raw.length && raw[0];
+
+        cb(err, blog);
     });
 }
 
@@ -105,10 +139,11 @@ Article.prototype.saveBlog = function (arr, cb) {
 
     // 处理 ext 数据
     this.conf.EXT_FIELDS.forEach(function (key) {
-        if (arr[key]) {
+        if (arr[key] !== undefined) {
             ext[key] = arr[key];
         }
     });
+
     article.ext = JSON.stringify(ext);
     
     if (!article.title || !article.content) {
@@ -121,11 +156,67 @@ Article.prototype.saveBlog = function (arr, cb) {
 }
 
 /**
+ * 更新日志
+ */
+Article.prototype.updateBlog = function (id, arr, cb) {
+    var article = {},
+        ext = {};
+
+    this.conf.FULL_FILEDS.forEach(function (key) {
+        if (arr[key]) {
+            article[key] = arr[key];
+        }
+    });
+
+    // 处理 ext 数据
+    this.conf.EXT_FIELDS.forEach(function (key) {
+        if (arr[key] !== undefined) {
+            ext[key] = arr[key];
+        }
+    });
+    article.ext = JSON.stringify(ext);
+    
+    if (!article.title || !article.content || !id) {
+        cb({msg: "invalid data", code: 1000});
+    } else {
+        this.conn.query("UPDATE blog_article SET ? WHERE id = ?", [article, id], function (error, raw) {
+            cb.apply(this, arguments);
+        });
+    }
+}
+
+/**
  * 删除
  */
 Article.prototype.delArticle = function (id, cb) {
-    this.conn.query("UPDATE blog_article SET ? WHERE id=?", [{del: 1}, id], function (error, raw) {
-        cb.apply(this, arguments);
+    var self = this;
+
+    async.waterfall([
+        // 查询到日志数据
+        function (next) {
+            self.findById(id, self.conf.FULL_FILEDS, function (err, raw) {
+                next(err, raw);
+            });
+        },
+        // 进行 tag 个数减
+        function (raw, next) {
+            // 判断有 tag 数据
+            if (raw && raw.length && raw[0].tag && raw[0].tag.length) {
+                Tag.modfityCount(raw[0].tag, -1, function (err, raw) {
+                     next(err);
+                });
+            } else {
+                next(null)
+            }
+        },
+        // 进行日志的删除
+        function (next) {
+            self.conn.query("UPDATE blog_article SET ? WHERE id=?", [{del: 1}, id], function (err, raw) {
+                next(err);
+            })        
+        }
+    ], function (err) {
+        cb(err);
     });
 }
 

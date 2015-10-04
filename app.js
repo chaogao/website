@@ -9,6 +9,7 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     conf = require("./db/conf"),
+    swig = require("swig"),
     app, fs, accessLog, errorLog;
 
 // 设置日志路径
@@ -17,13 +18,16 @@ accessLog = fs.createWriteStream('access.log', {flags: 'a'});
 errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 
 app = express();
-// 设置模板类型
-app.engine('tpl', require('ejs').renderFile);
 
-// 基本设置
-app.set('port', process.env.PORT || 3000);
+// 设置模板类型
+app.engine('html', swig.renderFile);
+app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
+app.set('view cache', false);
+swig.setDefaults({ cache: false });
+
+// 端口设置
+app.set('port', process.env.PORT || 3000);
 
 // cookie session flash 设置
 app.use(express.cookieParser());
@@ -51,10 +55,10 @@ app.use(express.bodyParser(
 app.use(express.methodOverride());
 
 // development only
-if ('development' == app.get('env')) {
+// if ('development' == app.get('env')) {
     app.use(express.errorHandler());
     app.use("/public", express.static(__dirname + '/public'));
-}
+// }
 
 // 路由
 app.use(app.router);
@@ -65,6 +69,7 @@ app.use(function (err, req, res, next) {
 
     if (err) {
         errorLog.write(meta + err.stack + '\n');
+        console.error(meta + err.stack + '\n');
     } else {
         accessLog.write(meta + '\n');
     }

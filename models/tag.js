@@ -1,14 +1,83 @@
 /**
  * @module models/tag
  */
-
 var Connection = require('../db');
+var async = require("async");
+
+var TABLE_NAME = 'blog_tag';
 
 /**
  * 分类 model
  */
 var Tag = function (argument) {
     this.conn = Connection.get();
+}
+
+/**
+ * 修改 tag 中存储日志的个数
+ */
+Tag.prototype.modfityCount = function (tags, count, cb) {
+    console.log(tags);
+    this.conn.query("update blog_tag set count = count + ? where name in (?)", [count, tags], function (err, raw) {
+        cb(err, raw);
+    });
+}
+
+
+/**
+ * 增加一批 tag 
+ */
+Tag.prototype.addTags = function (tags, cb) {
+    var notExsitTags = [];
+
+    var createTime = (new Date).getTime();
+
+    var self = this;
+
+    async.waterfall([
+        function (next) {
+            // 查询出来需要添加的 tag 集合
+            self.conn.query("select id, name from blog_tag where name in (?)", [tags], function (err, raw) {
+                if (!err) {
+                    console.log(raw);
+                    notExsitTags = tags.filter(function (name) {
+                        var insert = 1;
+
+                        raw.forEach(function (item) {
+
+                            if (item.name == name) {
+                                insert = 0;
+                            }
+                        });
+                        return insert;
+                    });
+
+                    notExsitTags = notExsitTags.map(function (name) {
+                        var fields = [name, createTime];
+
+                        return fields;
+                    });
+                }
+
+                // console.log(notExsitTags);
+
+                next(err, notExsitTags);
+            });
+        },
+        // 添加需要增加的 tag
+        function (tags) {
+            if (tags.length > 0) {
+                self.conn.query("insert into blog_tag (name, create_time) values ?", [tags], function (err, raw) {
+                    cb(err, tags);
+                });
+            } else {
+                // 没有要增加的 tag
+                cb(undefined, []);
+            }
+        }
+    ], function (err) {
+        cb(err);
+    });
 }
 
 /**

@@ -10,6 +10,7 @@ var fs = require("fs"),
     util = require("./util"),
     UPYun = require('../../plugin/upyun').UPYun,
     dateUtil = require("date-utils"),
+    async = require("async"),
     upyun, NEED_CHECK_ROUTES, YUNDOMAIN;
 
 
@@ -19,35 +20,35 @@ YUNDOMAIN = "http://website-node.b0.upaiyun.com";
 NEED_CHECK_ROUTES = [
     {
         "method": "get",
-        "url": "/admin/blog"
+        "url": "/mis/blog"
     },
     {
         "method": "post",
-        "url": "/admin/blog"
+        "url": "/mis/blog"
     },
     {
         "method": "get",
-        "url": "/admin/blog/create"
+        "url": "/mis/blog/create"
     },
     {
         "method": "get",
-        "url": "/admin/article/:id"
+        "url": "/mis/article/:id"
     },
     {
         "method": "post",
-        "url": "/admin/blogupdate"
+        "url": "/mis/blogupdate"
     },
     {
         "method": "post",
-        "url": "/admin/articledelete"
+        "url": "/mis/articledelete"
     },
     {
         "method": "post",
-        "url": "/admin/articletop"
+        "url": "/mis/articletop"
     },
     {
         "method": "post",
-        "url": "/admin/upload"
+        "url": "/mis/upload"
     }
 ];
 
@@ -57,12 +58,12 @@ exports.init = function (app) {
     /**
      * blog列表 action:get
      */
-    app.get("/admin/blog", function (req, res) {
+    app.get("/mis/blog", function (req, res) {
         var blogs;
 
         article.adminBlogs(article.conf.LITE_FILEDS, function(error, articles) {
             if (!error) {
-                res.render("admin/blog/index.tpl", {title: "Blog List", articles: articles});
+                res.render("mis/blog/index.html", {title: "日志列表", articles: articles});
             }
         });
     });
@@ -70,8 +71,8 @@ exports.init = function (app) {
     /**
      * 创建blog页面 action:get
      */
-    app.get("/admin/blog/create", function (req, res) {
-        res.render("admin/blog/create.tpl", {
+    app.get("/mis/blog/create", function (req, res) {
+        res.render("mis/blog/create.html", {
             title: "创建Blog", 
             error: req.flash("error")
         });
@@ -80,17 +81,47 @@ exports.init = function (app) {
     /**
      * 创建blog action:post
      */
-    app.post("/admin/blog", function (req, res) {
-        // console.log(req.session.user.name);
-        // req.body.blog.author = req.session.user.name;
+    app.post("/mis/blog", function (req, res) {
+        var blog = req.body.blog;
 
-        article.saveBlog(req.body.blog, function (error, blog) {
-            var msg;
+        // 存入作者信息
+        blog.author = app.locals.user && app.locals.user.name;
 
-            if (error) {
-                switch (error.code) {
+        // 必须 先保存了 tag 再进行 blog 的插入
+        async.waterfall([
+            // 将新增的 tag 保存
+            function (next) {
+                if (blog.tag) {
+                    Tag.addTags(blog.tag.split(","), function (err, raw) {
+                        next(err, raw);
+                    });
+                } else {
+                    next(null, []);
+                }
+            },
+            // 保存日志
+            function (raw ,next) {
+                article.saveBlog(blog, function (err, raw) {
+                    next(err, raw);
+                });
+            },
+            // tag 进行计数操作
+            function (raw, next) {
+                if (blog.tag) {
+                    Tag.modfityCount(blog.tag.split(","), 1, function (err, raw) {
+                        next(err);
+                    });
+                } else {
+                    next(null);
+                }
+            }
+        ], function (err) {
+            if (err) {
+                var msg;
+                
+                switch (err.code) {
                     case 1000:
-                        msg = error.msg;
+                        msg = err.msg;
                         break;
                     default:
                         msg = "server busy";
@@ -98,23 +129,23 @@ exports.init = function (app) {
                 }
 
                 req.flash("error", msg);
-                return res.redirect("/admin/blog/create");
+                res.redirect("/mis/blog/create");
+            } else {
+                res.redirect("/mis/blog");
             }
-
-            res.redirect("/admin/blog/");
         });
     });
 
     /**
      * 编辑页面 action:get
      */
-    app.get("/admin/article/:id", function (req, res) {
+    app.get("/mis/article/:id", function (req, res) {
         var id = req.params.id;
 
         article.findById(id, article.conf.FULL_FILEDS, function (error, article) {
 
             if (!error && article[0]) {
-                res.render("admin/blog/edit.tpl", {
+                res.render("mis/blog/edit.html", {
                     article: article[0],
                     title: "编辑",
                     error: req.flash("error")
@@ -126,34 +157,46 @@ exports.init = function (app) {
     /**
      * 修改blog action:post
      */
-    app.post("/admin/blogupdate", function (req, res) {
+    app.post("/mis/blogupdate", function (req, res) {
         var blog = req.body.blog,
             id = blog.id,
             sr;
 
         delete blog.id;
 
-        if (!blog.tags) {
-            blog.tags = new Array();
-        } else {
-            blog.tags.forEach(function (tag) {
-                var tag = new Tag({name: tag});
-                tag.saveTag();
-            });
-        }
+        // 必须 先保存了 tag 再进行 blog 的插入
+        async.waterfall([
+            function (next) {
+                if (blog.tag) {
+                    Tag.addTags(blog.tag.split(","), function (err, raw) {
+                        next();
+                    });
+                } else {
+                    next();
+                }
+            },
+            function () {
+                article.updateBlog(id, blog, function(error) {
+                    var msg;
 
-        if (!blog.series) {
-            blog.series = "";
-        } else {
-            sr = new Series({name: blog.series});
-            sr.saveSeries();
-        }
+                    if (error) {
+                        switch (error.code) {
+                            case 1000:
+                                msg = error.msg;
+                                break;
+                            default:
+                                msg = "server busy";
+                                break;
+                        }
 
-        Blog.update({_id: id}, {$set: blog}).exec(function(error) {
-            if (!error) {
-                res.redirect("/admin/blog");
+                        req.flash("error", msg);
+                        return res.redirect("/mis/article/" + id);
+                    }
+
+                    res.redirect("/mis/blog");
+                });
             }
-        });
+        ]);
     });
 
     /**
@@ -167,11 +210,14 @@ exports.init = function (app) {
             return;
         }
 
-        article.delArticle(id, function (error, raw) {
-            if (!error) {
+        article.delArticle(id, function (err, raw) {
+            if (!err) {
                 res.json({code: 0});
             } else {
-                res.json({code: -1, msg: "server error"});
+                res.json({
+                    code: -1,
+                    errData: err
+                });
             }
         });
     });
@@ -218,6 +264,32 @@ exports.init = function (app) {
                 console.log(error, msg);
                 res.json({code: -1, msg: "server error"});
             }
+        });
+    });
+
+    /**
+     * 增加一个 tag
+     */
+    app.get("/mis/addtag", function (req, res) {
+        var tags = req.param("tags");
+
+        if (!tags) {
+            res.json({
+                code: -1,
+                msg: "no tags input"
+            });
+
+            return;
+        }
+
+        tags = tags.split(",");
+
+        Tag.addTags(tags, function (err, raw) {
+            res.json({
+                errno: err && err.errno || 0,
+                errmsg: err && err.errmsg || "",
+                raw: raw
+            });
         });
     });
 }

@@ -9,7 +9,7 @@ module.exports = {
     checkLogin: function (req, res, next) {
         if (!req.session.user) {
             req.flash("error", "请登入");
-            return res.redirect("/admin/login");
+            return res.redirect("/mis/login");
         }
 
         next();
@@ -21,7 +21,6 @@ module.exports = {
     setSesstion: function (req, app, user) {
         req.session.user = user;
         app.locals.user = user;
-        console.log(user);
     },
     /**
      * 删除session，同时删除locals
