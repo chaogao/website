@@ -11,7 +11,7 @@ var TABLE_NAME = 'blog_article';
 
 var FIELDS_CONST = {
     LITE_FILEDS: ['id', 'title', 'series_name', 'series_id', 'description', 'author', 'ext', 'update_time', 'top', 'draft'],
-    FULL_FILEDS: ['id', 'title', 'series_name', 'series_id', 'description', 'author', 'content', 'ext', 'update_time', 'create_time', 'top', 'draft', 'tag'],
+    FULL_FILEDS: ['id', 'title', 'series_name', 'series_id', 'description', 'author', 'content', 'content_html', 'ext', 'update_time', 'create_time', 'top', 'draft', 'tag'],
     EXT_FIELDS: ['bg', 'titleBg']
 }
 
@@ -143,8 +143,9 @@ Article.prototype.saveBlog = function (arr, cb) {
             ext[key] = arr[key];
         }
     });
-
     article.ext = JSON.stringify(ext);
+
+    article.content_html = blogUtil.transMarkdown(article);
     
     if (!article.title || !article.content) {
         cb({msg: "invalid data", code: 1000});
@@ -175,6 +176,8 @@ Article.prototype.updateBlog = function (id, arr, cb) {
         }
     });
     article.ext = JSON.stringify(ext);
+    // 处理 markdown 数据
+    article.content_html = blogUtil.transMarkdown(article);
     
     if (!article.title || !article.content || !id) {
         cb({msg: "invalid data", code: 1000});

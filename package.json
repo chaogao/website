@@ -17,6 +17,7 @@
     "markdown": "*",
     "async": "*",
     "mysql": "*",
-    "swig": "*"
+    "swig": "*",
+    "highlight": "*"
   }
 }
