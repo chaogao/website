@@ -7,6 +7,16 @@ CREATE TABLE `blog_tag` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='日志 tag';
 
+CREATE TABLE `blog_category` (
+    `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键 id',
+    `name` varchar(32) NOT NULL COMMENT 'category 名称',
+    `fid` bigint(10) NOT NULL DEFAULT 0 COMMENT '分类父级',
+    `create_time` int(11) NOT NULL COMMENT '创建时间',
+    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='日志category';
+
 
 CREATE TABLE `blog_user` (
     `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键 id',

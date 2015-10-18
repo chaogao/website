@@ -3,7 +3,8 @@
  * @module admin/indexd
  */
 var User = require("../../models/user"),
-    blogAdmin = require("./blog"),
+    blogRoutes = require("./blog"),
+    categoryRoutes = require("./category"),
     util = require("./util"),
     NEED_CHECK_ROUTES;
 
@@ -19,10 +20,9 @@ NEED_CHECK_ROUTES = [
 ]
 
 exports.init = function (app) {
-
-
-    // 配置所有需要检测登入状态的路由
-    util.needCheckLogin(app, NEED_CHECK_ROUTES);
+    if (app.get("env") == "production") {
+        util.needCheckLogin(app, NEED_CHECK_ROUTES);
+    }
 
     /**
      * 管理首页 action:get
@@ -85,7 +85,7 @@ exports.init = function (app) {
             });
         }
     });
-    // }
 
-    blogAdmin.init(app);
+    blogRoutes.init(app);
+    categoryRoutes.init(app);
 }

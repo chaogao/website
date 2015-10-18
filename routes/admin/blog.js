@@ -6,7 +6,7 @@ var fs = require("fs"),
     path = require("path"),
     article = require("../../models/blog"),
     Tag = require("../../models/tag"),
-    Series = require("../../models/series"),
+    Categrory = require("../../models/category"),
     util = require("./util"),
     UPYun = require('../../plugin/upyun').UPYun,
     dateUtil = require("date-utils"),
@@ -53,7 +53,9 @@ NEED_CHECK_ROUTES = [
 ];
 
 exports.init = function (app) {
-    // util.needCheckLogin(app, NEED_CHECK_ROUTES);
+    if (app.get("env") == "production") {
+        util.needCheckLogin(app, NEED_CHECK_ROUTES);
+    }
 
     /**
      * blog列表 action:get
@@ -72,9 +74,14 @@ exports.init = function (app) {
      * 创建blog页面 action:get
      */
     app.get("/mis/blog/create", function (req, res) {
-        res.render("mis/blog/create.html", {
-            title: "创建Blog", 
-            error: req.flash("error")
+        var data;
+
+        Categrory.findAll(function (err, raw) {
+            res.render("mis/blog/create.html", {
+                category: raw,
+                title: "创建Blog", 
+                error: req.flash("error")
+            });
         });
     });
 
@@ -89,46 +96,69 @@ exports.init = function (app) {
 
         // 必须 先保存了 tag 再进行 blog 的插入
         async.waterfall([
+            // 进行基础输入检查
+            function (next) {
+                if (!blog.title || !blog.content || !blog.category_id) {
+                    next({
+                        errno: 1,
+                        errmsg: "必须的字段未提供"
+                    })
+                } else {
+                    next();
+                }
+            },
             // 将新增的 tag 保存
             function (next) {
                 if (blog.tag) {
                     Tag.addTags(blog.tag.split(","), function (err, raw) {
-                        next(err, raw);
+                        next(err);
                     });
                 } else {
-                    next(null, []);
+                    next();
                 }
             },
+            // 查询分类信息
+            function (next) {
+                Categrory.findById(blog.category_id, function (err, raw) {
+                    if (err || !raw.length) {
+                        next({
+                            errno: 2,
+                            errmsg: "分类信息检索错误"
+                        })
+                    } else {
+                        blog.category_id = raw[0].id;
+                        blog.category_name = raw[0].name;
+
+                        next();
+                    }
+                })
+            },
             // 保存日志
-            function (raw ,next) {
+            function (next) {
                 article.saveBlog(blog, function (err, raw) {
-                    next(err, raw);
+                    next(err);
                 });
             },
             // tag 进行计数操作
-            function (raw, next) {
+            function (next) {
                 if (blog.tag) {
                     Tag.modfityCount(blog.tag.split(","), 1, function (err, raw) {
                         next(err);
                     });
                 } else {
-                    next(null);
+                    next();
                 }
+            },
+            // categroy 技术操作
+            function (next) {
+                Categrory.modfityCount(blog.category_id, 1, function (err, raw) {
+                    next(err);
+                });
             }
         ], function (err) {
             if (err) {
-                var msg;
-                
-                switch (err.code) {
-                    case 1000:
-                        msg = err.msg;
-                        break;
-                    default:
-                        msg = "server busy";
-                        break;
-                }
-
-                req.flash("error", msg);
+                console.log(err);
+                req.flash("error", err.errmsg);
                 res.redirect("/mis/blog/create");
             } else {
                 res.redirect("/mis/blog");
