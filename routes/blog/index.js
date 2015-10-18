@@ -171,9 +171,9 @@ routes.search = function (req, res) {
                         next(err);
                     });
                 }
+            } else {
+                next();
             }
-
-            next();
         }
     ], function (err) {
         if (req.query.json) {
