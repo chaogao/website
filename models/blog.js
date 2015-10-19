@@ -13,10 +13,10 @@ var TABLE_NAME = 'blog_article';
 var FIELDS_CONST = {
     LITE_FILEDS: ['id', 'title', 'category_name', 'category_id', 'tag',
         'description', 'author',
-        'ext', 'update_time', 'create_time', 'top', 'draft'],
+        'ext', 'update_time', 'create_time', 'top', 'draft', 'content_html_lite'],
     FULL_FILEDS: [
         'id', 'title', 'category_name', 'category_id', 'tag',
-        'description', 'author', 'content', 'content_html', 
+        'description', 'author', 'content', 'content_html', 'content_html_lite',
         'ext', 'update_time', 'create_time', 'top', 'draft'
     ],
     EXT_FIELDS: ['bg', 'titleBg']
@@ -165,6 +165,7 @@ Article.prototype.saveBlog = function (arr, cb) {
     article.ext = JSON.stringify(ext);
 
     article.content_html = blogUtil.transMarkdown(article);
+    article.content_html_lite = blogUtil.transLiteMarkdown(article);
 
     if (!article.title || !article.content || !article.category_id) {
         cb({msg: "invalid data", code: 1000});
@@ -197,6 +198,7 @@ Article.prototype.updateBlog = function (id, arr, cb) {
     article.ext = JSON.stringify(ext);
     // 处理 markdown 数据
     article.content_html = blogUtil.transMarkdown(article);
+    article.content_html_lite = blogUtil.transLiteMarkdown(article);
     
     if (!article.title || !article.content || !id) {
         cb({msg: "invalid data", code: 1000});

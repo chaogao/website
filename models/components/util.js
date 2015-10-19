@@ -2,6 +2,25 @@ var marked = require("markdown");
 var hl = require("highlight").Highlight;
 
 /**
+ * 计算行数
+ */
+function count_lines( str ) {
+	var n = 0, i = -1;
+	while ( ( i = str.indexOf("\n", i + 1) ) !== -1 ) n++;
+	return n;
+}
+
+/**
+ * 获取行数之前的字符
+ */ 
+function getLineStr (str, line) {
+	var n = 0, i = -1;
+	while ( ( i = str.indexOf("\n", i + 1) ) !== -1 && n <= line ) n++;
+
+	return str.slice(0, i);
+}
+
+/**
  * 日志数据处理工具类
  */
 var util = {};
@@ -23,6 +42,25 @@ util.transMarkdown = function (blog) {
      html = hl(html, false, true);
 
      return html;
+}
+
+util.transLiteMarkdown = function (blog) {
+	var str = blog.content,
+		count;
+
+	str = str.replace(/(\r\n|\n|\r)/g, "\n");
+
+	count = count_lines(str);
+
+	if (count > 5) {
+		str = getLineStr(str, 5);
+	}
+
+	var html = marked.parse(str);
+
+    html = hl(html, false, true);
+
+    return html;
 }
 
 
