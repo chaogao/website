@@ -76,7 +76,7 @@ routes.index = function (req, res) {
             res.json(err);
         } else {
             data.blog = blog;
-
+            
            if (req.query.json) {
                 res.json(data);
             } else {
