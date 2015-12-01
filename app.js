@@ -42,9 +42,7 @@ app.use(function (req, res, next) {
 });
 
 // 基本设置
-app.use(express.favicon(
-    express.favicon(path.join(__dirname, './favicon.ico'))
-));
+app.use(express.favicon(path.join(__dirname, './favicon.ico')));
 
 app.use(express.logger({stream: accessLog}));
 
