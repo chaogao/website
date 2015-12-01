@@ -42,7 +42,7 @@ routes.about = function (req, res) {
 routes.index = function (req, res) {
     var id = req.params.id,
         data = {
-            title: "我的前端世界"
+            title: "高超(gaochao)的个人网站|我的前端世界"
         };
 
     async.waterfall([
@@ -134,6 +134,7 @@ routes.search = function (req, res) {
                     ret.category.forEach(function (item) {
                         if (item.id == key) {
                             item.active = 1;
+                            ret.typeName = item.name;
                             return false;
                         }
                     });
@@ -144,6 +145,7 @@ routes.search = function (req, res) {
                     ret.tag.forEach(function (item) {
                         if (item.name == key) {
                             item.active = 1;
+                            ret.typeName = item.name;
                             return false;
                         }
                     });
