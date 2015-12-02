@@ -1,6 +1,14 @@
 // 建立 mysql 链接
+var fs = require("fs");
+
+// 读取数据库配置
+if (process.env == "production") {
+    var conf = JSON.parse(fs.readFileSync("/etc/blog/conf.js"));
+} else {
+    var conf = JSON.parse(fs.readFileSync("./conf.js"));
+}
 var Connection = require('./db');
-Connection.create();
+Connection.create(conf);
 
 var express = require('express'),
     flash = require("connect-flash"),
@@ -8,17 +16,14 @@ var express = require('express'),
     admin = require('./routes/admin'),
     http = require('http'),
     path = require('path'),
-    conf = require("./db/conf"),
     swig = require("swig"),
     app, fs, accessLog, errorLog;
 
-// 设置日志路径
-fs = require("fs");
-accessLog = fs.createWriteStream('access.log', {flags: 'a'});
-errorLog = fs.createWriteStream('error.log', {flags: 'a'});
-
 app = express();
 
+// 设置日志路径
+accessLog = fs.createWriteStream('access.log', {flags: 'a'});
+errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 // 设置模板类型
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');

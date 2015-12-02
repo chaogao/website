@@ -2,7 +2,6 @@
  * @module models/blog
  */
 var Connection = require("../db");
-var Conf = require("../db/conf");
 var async = require("async");
 var blogUtil = require("./components/util");
 var Tag = require("./tag");

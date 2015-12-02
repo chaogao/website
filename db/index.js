@@ -2,12 +2,12 @@ var mysql = require('mysql');
 var conn;
 
 var Connection = {
-    create: function () {
+    create: function (conf) {
         conn = mysql.createPool({
-            host     : '120.25.210.249',
-            user     : 'root',
-            password : '4085903dAg',
-            database : 'blog'
+            host     : conf.host,
+            user     : conf.user,
+            password : conf.pass,
+            database : conf.db
         });
 
         this.listen(conn);

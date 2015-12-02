@@ -17,7 +17,6 @@ var Tag = function (argument) {
  * 修改 tag 中存储日志的个数
  */
 Tag.prototype.modfityCount = function (tags, count, cb) {
-    console.log(tags);
     this.conn.query("update blog_tag set count = count + ? where name in (?)", [count, tags], function (err, raw) {
         cb(err, raw);
     });
