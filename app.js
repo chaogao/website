@@ -2,11 +2,7 @@
 var fs = require("fs");
 
 // 读取数据库配置
-if (process.env == "production") {
-    var conf = JSON.parse(fs.readFileSync("/etc/blog/conf.js"));
-} else {
-    var conf = JSON.parse(fs.readFileSync("./conf.js"));
-}
+var conf = JSON.parse(fs.readFileSync("./conf.js"));
 var Connection = require('./db');
 Connection.create(conf);
 
@@ -22,8 +18,8 @@ var express = require('express'),
 app = express();
 
 // 设置日志路径
-accessLog = fs.createWriteStream('access.log', {flags: 'a'});
-errorLog = fs.createWriteStream('error.log', {flags: 'a'});
+accessLog = fs.createWriteStream('./log/access.log', {flags: 'a'});
+errorLog = fs.createWriteStream('./log/error.log', {flags: 'a'});
 // 设置模板类型
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
