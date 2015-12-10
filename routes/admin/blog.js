@@ -11,6 +11,7 @@ var fs = require("fs"),
     UPYun = require('../../plugin/upyun').UPYun,
     dateUtil = require("date-utils"),
     async = require("async"),
+    commonUtil = require("../components/common.js"),
     upyun, NEED_CHECK_ROUTES, YUNDOMAIN;
 
 
@@ -20,35 +21,39 @@ YUNDOMAIN = "http://website-node.b0.upaiyun.com";
 NEED_CHECK_ROUTES = [
     {
         "method": "get",
-        "url": "/mis/blog"
+        "url": "/admin/blog"
     },
     {
         "method": "post",
-        "url": "/mis/blog"
+        "url": "/admin/blog"
     },
     {
         "method": "get",
-        "url": "/mis/blog/create"
+        "url": "/admin/blog/create"
     },
     {
         "method": "get",
-        "url": "/mis/article/:id"
+        "url": "/admin/article/:id"
     },
     {
         "method": "post",
-        "url": "/mis/blogupdate"
+        "url": "/admin/blogupdate"
     },
     {
         "method": "post",
-        "url": "/mis/articledelete"
+        "url": "/admin/articledelete"
     },
     {
         "method": "post",
-        "url": "/mis/articletop"
+        "url": "/admin/articletop"
     },
     {
         "method": "post",
-        "url": "/mis/upload"
+        "url": "/admin/articledraft"
+    },
+    {
+        "method": "post",
+        "url": "/admin/upload"
     }
 ];
 
@@ -63,9 +68,11 @@ exports.init = function (app) {
     app.get("/mis/blog", function (req, res) {
         var blogs;
 
-        article.adminBlogs(article.conf.LITE_FILEDS, function(error, articles) {
+        article.adminBlogs(article.conf.LITE_FILEDS, 1, function(error, articles) {
             if (!error) {
                 res.render("mis/blog/index.html", {title: "日志列表", articles: articles});
+            } else {
+                commonUtil.toJson(error, {}, res);
             }
         });
     });
@@ -269,6 +276,40 @@ exports.init = function (app) {
             } else {
                 res.json({code: -1, msg: "server error"});
             }
+        });
+    });
+
+    /**
+     * 设置日志草稿
+     */
+    app.get("/admin/articledraft", function (req, res) {
+        var id = req.param("id"),
+            flag = req.param("flag");
+
+        if (!id) {
+            commonUtil.toJson({
+                errno: 1,
+                errmsg: "id param error"
+            }, {}, res);
+
+            return;
+        }
+
+        if (flag === "on") {
+            flag = 1;
+        } else if (flag == "off") {
+            flag = 0;
+        } else {
+            commonUtil.toJson({
+                errno: 1,
+                errmsg: "flag param error"
+            }, {}, res);
+
+            return;
+        }
+
+        article.draft(id, flag, function (err, raw) {
+            commonUtil.toJson(err, raw, res);
         });
     });
 

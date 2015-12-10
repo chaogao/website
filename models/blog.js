@@ -36,36 +36,38 @@ var Article = function (argument) {
  * @param  {Function} cb     [description]
  * @return {[type]}          [description]
  */
-Article.prototype.adminBlogs = function (fields, cb) {
+Article.prototype.adminBlogs = function (fields, withDraft, cb) {
     var result = [],
         self = this;
 
     async.waterfall([
         function (callback) {
-            self.conn.query('select ?? from ?? where top=? and del=0',
+            self.conn.query('select ?? from ?? where top=?' + (withDraft ? '' : ' and draft=0') + ' and del=0',
                 [fields, TABLE_NAME, 1], function (error, raw) {
                     callback(error, raw);
                 }
             );
         },
-        function (raw) {
+        function (raw, callback) {
             raw[0] && (result.push(raw[0]));
 
-            self.conn.query('select ?? from ?? where top=? and del=0 order by id desc',
+            self.conn.query('select ?? from ?? where top=?' + (withDraft ? '' : ' and draft=0') + ' and del=0 order by id desc',
                 [fields, TABLE_NAME, 0], function (error, raw) {
-                    result = result.concat(raw);
+                    if (raw) {
+                        result = result.concat(raw);
+                    }
 
                     // 处理 ext 数据
                     result.forEach(function (item) {
                         blogUtil.transBlog(item);
                     });
 
-                    cb.apply(this, [error, result]);
+                    callback(error, result);
                 }
             );
         }
-    ], function (error) {
-        // todo logo
+    ], function (error, ret) {
+        cb(error, ret);
     });
 }
 
@@ -86,9 +88,9 @@ Article.prototype.findByTag = function (name, fields, cb) {
 
     // 不传入 tag 属性直接走全量即可
     if (!name) {
-        self.adminBlogs(fields, cb);
+        self.adminBlogs(fields, 0, cb);
     } else {
-        this.conn.query("select ?? from blog_article where del=0 and `tag` like ?", [fields, "%" + name + "%"], function (err, raw) {
+        this.conn.query("select ?? from blog_article where del=0 and draft=0 and `tag` like ?", [fields, "%" + name + "%"], function (err, raw) {
             // 处理日志数据
             raw && raw.length && raw.forEach(function (item) {
                 blogUtil.transBlog(item);
@@ -103,7 +105,7 @@ Article.prototype.findByTag = function (name, fields, cb) {
  * 通过单位 category 获取日志
  */
 Article.prototype.findByCategory = function (id, fields, cb) {
-    this.conn.query("select ?? from ?? where del=0 and category_id=?", [fields, TABLE_NAME, id], function (err, raw) {
+    this.conn.query("select ?? from ?? where del=0 and draft=0 and category_id=?", [fields, TABLE_NAME, id], function (err, raw) {
         raw && raw.forEach(function (item) {
             blogUtil.transBlog(item);
         });
@@ -274,158 +276,20 @@ Article.prototype.topArticle = function (id, cb) {
 }
 
 /**
- * 删除记录
+ * 日志的上下线
  */
+Article.prototype.draft = function (id, flag, cb) {
+    var self = this;
 
-// schema = mongoose.Schema({
-//     title: String,
-//     author: String,
-//     description: String,
-//     date: Date,
-//     dateStr: String,
-//     tags: Array,
-//     content: String,
-//     bg: {type: String, default: ""},
-//     titleBg: {type: String, default: ""},
-//     top: {type: Boolean, default: false},
-//     draft: {type: Boolean, default: true},
-//     series: {type: String, default: ""}
-// });
-
-
-
-/**
- * 获取排序后的blog列表，用于admin使用
- */
-// schema.statics.adminBlogs = function (fileds, cb) {
-//     var self = this;
-
-//     self.find({top: false}).select(fileds).sort({date: -1}).exec(function (error, blogs) {
-//         if (!error) {
-//             self.findOne({top: true}, fileds, function (error, blog) {
-//                 if (!error) {
-//                     blog && blogs.unshift(blog);
-//                 }
-//                 cb && cb(error, blogs);
-//             });
-//         }
-//     });
-// }
-
-/**
- * 获取置顶的blog数据
- */
-// schema.statics.topBlog = function (fileds, cb) {
-//     var self = this;
-
-//     fileds = fileds || Blog.Const.MIDDLE_FILEDS;
-
-//     self.findOne({top: true}, fileds, function (error, blog) {
-//         cb && cb(error, blog);
-//     });
-// }
-
-/**
- * blog的详细信息，并包括上一个、下一个的简略信息
- */
-// schema.statics.viewBlog = function (id, cb) {
-//     var self = this,
-//         datas;
-
-//     datas = {};
-
-//     async.waterfall([
-//         function (callback) {
-//             self.findById(id).exec(function (error, blog) {
-//                 datas.blog = blog;
-
-//                 callback(error, blog);
-//             });
-//         },
-//         function (blog, callback) {
-//             self.find({_id: {$lt: blog.id}}).select(Blog.Const.MIN_FILEDS).sort({_id: -1}).limit(1).exec(function(error, blogs) {
-//                 if (blogs.length > 0) {
-//                     datas.pre = blogs[0];
-//                 }
-
-//                 callback(error, blog);
-//             });
-//         },
-//         function (blog, callback) {
-//             self.find({_id: {$gt: blog.id}}).select(Blog.Const.MIN_FILEDS).sort({_id: 1}).limit(1).exec(function (error, blogs) {
-//                 if (blogs.length > 0) {
-//                     datas.next = blogs[0];
-//                 }
-
-//                 callback(error, blog);
-//             });
-//         },
-//         function (blog, callback) {
-//             Blog.findBySeries(blog.series, function (error, blogs) {
-//                 datas.seriesBlogs = blogs;
-//                 callback(error);
-//             });
-//         }
-//     ], function (error) {
-//         error ? cb(error) : cb(error, datas);
-//     });
-// }
-
-// /**
-//  * 通过 tag 获取日志
-//  */
-// schema.statics.findByTag = function (name, cb) {
-//     var self = this,
-//         filter;
-        
-//     if (!name) {
-//         Blog.adminBlogs(Blog.Const.MIN_FILEDS, cb);
-//         return;
-//     } else {
-//         filter = {tags: name};
-//     }
-
-//     self.find(filter).select(Blog.Const.MIN_FILEDS).sort({date: -1}).exec(function () {
-//         cb && cb.apply(this, arguments);
-//     });
-// }
-
-// /**
-//  * 通过 series 获取日志
-//  */
-// schema.statics.findBySeries = function (name, cb) {
-//     var self = this,
-//         filter;
-        
-//     filter = {series: name};
-
-//     self.find(filter).select(Blog.Const.MIN_FILEDS).sort({date: 1}).exec(function () {
-//         cb && cb.apply(this, arguments);
-//     });
-// }
-
-// /**
-//  * 置顶blog
-//  * @param {string}   id   需要置顶的id
-//  * @param {function} [cb] 回调函数
-//  */
-// schema.statics.setTop = function (id, cb) {
-//     var self = this;
-
-//     self.update({top: true}, {top: false}).exec(function (error) {
-//         if (!error) {
-//             self.update({_id: id}, {$set: {top: true}}).exec(function () {
-//                 cb && cb.apply(this, arguments);
-//             });
-//         }
-//     });
-// }
-
-// Blog = mongoose.model("Blog", schema);
-
-// Blog.Const = {};
-// Blog.Const.MIN_FILEDS = "title series bg tags date description top draft";
-// Blog.Const.MIDDLE_FILEDS = "title series author description date tags bg titleBg top draft";
-// Blog.Const.FULL_FILEDS = "title series author description date tags bg titleBg content top draft";
+    async.waterfall([
+        function (callback) {
+            self.conn.query("UPDATE blog_article set ? where id = ?", [{draft: flag}, id], function (err, raw) {
+                callback(err, raw);
+            });
+        }
+    ], function (err, raw) {
+        cb(err, raw);
+    });
+}
 
 module.exports = new Article();

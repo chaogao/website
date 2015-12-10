@@ -194,14 +194,7 @@ routes.blogCategory = function (req, res) {
     console.log(id);
 
     blog.findByCategory(id, blog.conf.FULL_FILEDS, function (err, raw) {
-        if (err) {
-            res.status(404).render("404.tpl");
-        } else {
-            res.json({
-                errno: 0,
-                content: raw,
-            });
-        }
+        commonUtil.toJson(err, raw, res);
     });
 }
 
@@ -210,14 +203,7 @@ routes.blogTag = function (req, res) {
     var name = req.params.name;
 
     blog.findByTag(name, blog.conf.FULL_FILEDS, function (err, datas) {
-        if (err) {
-            res.status(404).render("404.tpl");
-        } else {
-            res.json({
-                errno: 0,
-                content: datas,
-            });
-        }
+        commonUtil.toJson(err, datas, res);
     });
 }
 
