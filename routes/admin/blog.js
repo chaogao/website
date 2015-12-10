@@ -21,39 +21,39 @@ YUNDOMAIN = "http://website-node.b0.upaiyun.com";
 NEED_CHECK_ROUTES = [
     {
         "method": "get",
-        "url": "/admin/blog"
+        "url": "/mis/blog"
     },
     {
         "method": "post",
-        "url": "/admin/blog"
+        "url": "/mis/blog"
     },
     {
         "method": "get",
-        "url": "/admin/blog/create"
+        "url": "/mis/blog/create"
     },
     {
         "method": "get",
-        "url": "/admin/article/:id"
+        "url": "/mis/article/:id"
     },
     {
         "method": "post",
-        "url": "/admin/blogupdate"
+        "url": "/mis/blogupdate"
     },
     {
         "method": "post",
-        "url": "/admin/articledelete"
+        "url": "/mis/articledelete"
     },
     {
         "method": "post",
-        "url": "/admin/articletop"
+        "url": "/mis/articletop"
     },
     {
         "method": "post",
-        "url": "/admin/articledraft"
+        "url": "/mis/articledraft"
     },
     {
         "method": "post",
-        "url": "/admin/upload"
+        "url": "/mis/upload"
     }
 ];
 
@@ -239,7 +239,7 @@ exports.init = function (app) {
     /**
      * 删除日志
      */
-    app.post("/admin/articledelete", function (req, res) {
+    app.post("/mis/articledelete", function (req, res) {
         var id = req.body.id;
 
         if (!id) {
@@ -262,7 +262,7 @@ exports.init = function (app) {
     /**
      * 设置置顶 action:post
      */
-    app.post("/admin/articletop", function (req, res) {
+    app.post("/mis/articletop", function (req, res) {
         var id = req.body.id;
 
         if (!id) {
@@ -282,7 +282,7 @@ exports.init = function (app) {
     /**
      * 设置日志草稿
      */
-    app.get("/admin/articledraft", function (req, res) {
+    app.get("/mis/articledraft", function (req, res) {
         var id = req.param("id"),
             flag = req.param("flag");
 
@@ -316,7 +316,7 @@ exports.init = function (app) {
     /**
      * 上传文件接口
      */
-    app.post("/admin/upload", function (req, res) {
+    app.post("/mis/upload", function (req, res) {
         var file, buffer, basename;
 
         file = req.files.image;
