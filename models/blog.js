@@ -190,6 +190,11 @@ Article.prototype.updateBlog = function (id, arr, cb) {
     var article = {},
         ext = {};
 
+    // 保留原始日志的 history 配置
+    if (arr.ext_history) {
+        ext['history'] = arr.ext_history;
+    }
+
     this.conf.FULL_FILEDS.forEach(function (key) {
         if (arr[key]) {
             article[key] = arr[key];
