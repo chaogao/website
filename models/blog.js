@@ -51,7 +51,7 @@ Article.prototype.adminBlogs = function (fields, withDraft, cb) {
         function (raw, callback) {
             raw[0] && (result.push(raw[0]));
 
-            self.conn.query('select ?? from ?? where top=?' + (withDraft ? '' : ' and draft=0') + ' and del=0 order by id desc',
+            self.conn.query('select ?? from ?? where top=?' + (withDraft ? '' : ' and draft=0') + ' and del=0 order by create_time desc',
                 [fields, TABLE_NAME, 0], function (error, raw) {
                     if (raw) {
                         result = result.concat(raw);
@@ -90,7 +90,7 @@ Article.prototype.findByTag = function (name, fields, cb) {
     if (!name) {
         self.adminBlogs(fields, 0, cb);
     } else {
-        this.conn.query("select ?? from blog_article where del=0 and draft=0 and `tag` like ?", [fields, "%" + name + "%"], function (err, raw) {
+        this.conn.query("select ?? from blog_article where del=0 and draft=0 and `tag` like ? order by create_time desc", [fields, "%" + name + "%"], function (err, raw) {
             // 处理日志数据
             raw && raw.length && raw.forEach(function (item) {
                 blogUtil.transBlog(item);
@@ -105,7 +105,7 @@ Article.prototype.findByTag = function (name, fields, cb) {
  * 通过单位 category 获取日志
  */
 Article.prototype.findByCategory = function (id, fields, cb) {
-    this.conn.query("select ?? from ?? where del=0 and draft=0 and category_id=?", [fields, TABLE_NAME, id], function (err, raw) {
+    this.conn.query("select ?? from ?? where del=0 and draft=0 and category_id=? order by create_time desc", [fields, TABLE_NAME, id], function (err, raw) {
         raw && raw.forEach(function (item) {
             blogUtil.transBlog(item);
         });
@@ -150,7 +150,12 @@ Article.prototype.saveBlog = function (arr, cb) {
     var article = {},
         ext = {};
 
-    arr.create_time = (new Date).getTime();
+    // 判断归档文章
+    if (!arr.create_time) {
+        arr.create_time = parseInt((new Date).getTime() / 1000);
+    } else {
+        ext.history = 1;
+    }
 
     this.conf.FULL_FILEDS.forEach(function (key) {
         if (arr[key]) {

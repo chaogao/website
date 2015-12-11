@@ -32,6 +32,7 @@ var util = {};
 util.transBlog = function (blog) {
     blog.ext = blog.ext && JSON.parse(blog.ext) || {};
     blog.tag = blog.tag && blog.tag.split(",");
+    blog.create_time = new Date(blog.create_time * 1000);
 
     return blog;
 }

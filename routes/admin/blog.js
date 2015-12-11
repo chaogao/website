@@ -142,6 +142,10 @@ exports.init = function (app) {
             },
             // 保存日志
             function (next) {
+                if (blog.create_time) {
+                    blog.create_time = parseInt((new Date(blog.create_time)).getTime() / 1000);
+                }
+
                 article.saveBlog(blog, function (err, raw) {
                     next(err);
                 });
