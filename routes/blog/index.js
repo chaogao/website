@@ -4,6 +4,8 @@ var routes = {},
     Category = require("../../models/category"),
     commonUtil = require("../components/common.js"),
     async = require("async"),
+    rss = require("rss"),
+    rssConf = require("../../db/rss.js"),
     count = 0;
 
 exports.init = function (app) {
@@ -21,6 +23,37 @@ exports.init = function (app) {
     // 检索相关页面
     app.get("/search", routes.search);
     app.get("/search/:type/:key", routes.search);
+
+    // rss
+    app.get("/rss.xml", routes.rss);
+}
+
+routes.rss = function (req, res) {
+    var feed, xml;
+
+    rssConf['pubDate'] = new Date();
+
+    feed = new rss(rssConf);
+
+    blog.rss(function (err, ret) {
+        if (!err) {
+            ret.content.forEach(function (item) {
+                feed.item({
+                    title: item.title,
+                    description: item.content_html_lite,
+                    url: "http://tedfe.com/blog/" + item.id,
+                    guid: item.id,
+                    author: item.author,
+                    date: item.create_time
+                });
+            });
+
+        }
+
+        var xml = feed.xml();
+        res.set('Content-Type', 'text/xml');
+        res.send(xml);
+    });
 }
 
 routes.about = function (req, res) {

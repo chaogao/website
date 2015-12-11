@@ -115,6 +115,86 @@ Article.prototype.findByCategory = function (id, fields, cb) {
 }
 
 /**
+ * 分页获取数据
+ */
+Article.prototype.getByPager = function (option, cb) {
+    var fields = option.fields;
+    var conditions = option.conditions;
+    var orderStr = option.orderStr || " order by create_time desc";
+    var perCount = option.perCount || 10;
+    var page = option.page || 0;
+
+    var self = this;
+    var sql = "select ?? from blog_article where ";
+    var sqlCount = "select count(*) as total from blog_article where ";
+
+    var conArr = [], valueArr = [];
+
+    // 处理条件
+    for (var key in conditions) {
+        conArr.push(key);
+        valueArr.push(conditions[key]);
+    }
+
+    var conStr = conArr.join(" and ");
+
+    sql += conStr;
+    sqlCount +=  conStr;
+
+    async.waterfall([
+        function (next) {
+            self.conn.query(sqlCount, valueArr, function (err, raw) {
+                if (!err) {
+                    var total = raw[0]['total'];
+                    next(err, total);
+                } else {
+                    next(err);
+                }
+            });
+        },
+        function (total, next) {
+            var start = page * perCount,
+                end = (page + 1) * perCount,
+                limit = " limit " + start + "," + end;
+
+            sql += (orderStr + limit);
+
+            self.conn.query(sql, [fields].concat(valueArr), function (err, raw) {
+                raw.forEach(function (item) {
+                    blogUtil.transBlog(item);
+                });
+                next(err, total, raw);
+            });
+        }
+    ], function (err, total, raw) {
+        var ret = {};
+
+        if (total && ret) {
+            ret['total'] = total;
+            ret['total_page'] = Math.ceil(total / perCount);
+            ret['content'] = raw;
+        }
+
+        cb(err, ret);
+    });
+}
+
+/**
+ * rss 获取日志
+ */
+Article.prototype.rss = function (cb) {
+    this.getByPager({
+        fields: this.conf.LITE_FILEDS,
+        conditions: {
+            "del=?": 0,
+            "draft=?" : 0,
+        }
+    }, function (err, ret) {
+        cb(err, ret);
+    });
+}
+
+/**
  * 通过 tag 获取日志
  */
 Article.prototype.findById = function (id, fields, cb) {
