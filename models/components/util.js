@@ -1,6 +1,7 @@
 var md = require('markdown-it')({
     html: true,
-    linkify: true
+    linkify: true,
+    breaks: true
 });
 
 var hl = require("highlight").Highlight;
