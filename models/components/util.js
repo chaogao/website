@@ -1,4 +1,8 @@
-var marked = require("markdown");
+var md = require('markdown-it')({
+    html: true,
+    linkify: true
+});
+
 var hl = require("highlight").Highlight;
 
 /**
@@ -38,7 +42,7 @@ util.transBlog = function (blog) {
 }
 
 util.transMarkdown = function (blog) {
-     var html = marked.parse(blog.content);
+     var html = md.render(blog.content);
 
      html = hl(html, false, true);
 
@@ -57,7 +61,7 @@ util.transLiteMarkdown = function (blog) {
 		str = getLineStr(str, 5);
 	}
 
-	var html = marked.parse(str);
+	var html = md.render(str);
 
     html = hl(html, false, true);
 

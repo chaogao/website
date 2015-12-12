@@ -19,6 +19,7 @@
     "mysql": "*",
     "swig": "*",
     "highlight": "*",
-    "rss": "1.2.1"
+    "rss": "1.2.1",
+    "markdown-it": "~5.0.2"
   }
 }
